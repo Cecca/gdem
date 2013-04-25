@@ -38,6 +38,8 @@ hll_counter_t new_hll_counter(size_t bits);
 
 void delete_hll_counter(hll_counter_t counter);
 
+hll_counter_t hll_counter_copy(hll_counter_t counter);
+
 // ----------------------------------------------------------------------------
 //   Counter operations
 // ----------------------------------------------------------------------------

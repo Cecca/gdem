@@ -18,6 +18,13 @@ void delete_fm_counter(fm_counter_t counter) {
   free(counter.registers);
 }
 
+fm_counter_t fm_counter_copy(fm_counter_t counter) {
+  fm_counter_t c;
+  c.m = counter.m;
+  memcpy(c.registers, counter.registers, counter.m*sizeof(fm_reg_t));
+  return c;
+}
+
 inline size_t fm_rho(fm_hash_t elem) {
   if(elem == 0) {
     return sizeof(fm_hash_t)*8;

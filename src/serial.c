@@ -4,7 +4,7 @@
 #include <sys/stat.h>
 #include <errno.h>
 
-#define COUNTER_BITS 9
+#define COUNTER_BITS 2
 
 /* This routine returns the size of the file it is called with. */
 
@@ -132,18 +132,28 @@ int main(int argc, char **argv) {
   }
 
   int changed = node_count;
-  int i, j;
-  while(changed > 0) {
+  int i, j, iteration = 0;
+  while(changed > 0 && iteration < 10) {
+    printf("Iteration %d\n", iteration++);
+
+    changed = 0;
 
     for(i=0; i<node_count; ++i) { // for each node
       node_t n = nodes[i];
 
       for(j = 0; j<n.num_neighbours; ++j) { // for each neighbour
-        counter_union(n.counter, nodes[n.neighbours[j]].prev_counter);
+        n.counter = counter_union(
+              n.counter, nodes[n.neighbours[j]].prev_counter);
       }
+      if(!counter_equals(n.counter, n.prev_counter)) {
+        ++changed;
+      }
+      delete_counter(n.prev_counter);
+      n.prev_counter = counter_copy(n.counter);
 
     }
 
   }
 
+  return 0;
 }

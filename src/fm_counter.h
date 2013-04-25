@@ -31,6 +31,8 @@ fm_counter_t new_fm_counter(size_t numRegisters);
 
 void delete_fm_counter(fm_counter_t counter);
 
+fm_counter_t fm_counter_copy(fm_counter_t counter);
+
 // ----------------------------------------------------------------------------
 //   Counter operations
 // ----------------------------------------------------------------------------

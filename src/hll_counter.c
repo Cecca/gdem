@@ -61,6 +61,19 @@ void delete_hll_counter(hll_counter_t counter){
   free(counter.registers);
 }
 
+hll_counter_t hll_counter_copy(hll_counter_t counter) {
+  hll_counter_t c;
+  c.b = counter.b;
+  c.m = counter.m;
+  c.mask = counter.mask;
+  c.registers = malloc(counter.m*sizeof(hll_reg_t));
+  int i = 0;
+  for(; i<counter.m; ++i) {
+    c.registers[i] = counter.registers[i];
+  }
+  return c;
+}
+
 inline hll_reg_t hll_rho(hll_hash_t x, unsigned int mask) {
   if( (x & mask) == 0 ) {
     return sizeof(hll_hash_t)*8;
@@ -106,5 +119,15 @@ int hll_counter_equals(hll_counter_t a, hll_counter_t b) {
   if(a.b != b.b) {
     return 0;
   }
-  return memcmp(a.registers, b.registers, a.m*sizeof(hll_reg_t)) == 0 ;
+  int i = 0;
+  printf("Cmp: ");
+  for(; i<a.m; ++i) {
+    printf(" %d =? %d | ", a.registers[i], b.registers[i]);
+    if(a.registers[i] != b.registers[i]) {
+      printf("\n");
+      return 0;
+    }
+  }
+  printf("\n");
+  return 1;
 }
