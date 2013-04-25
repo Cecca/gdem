@@ -92,5 +92,12 @@ hll_cardinality_t hll_size(hll_counter_t counter) {
 }
 
 hll_counter_t hll_union(hll_counter_t a, hll_counter_t b) {
-  // TODO
+  assert(a.b == b.b);
+  hll_counter_t c = new_hll_counter(a.b);
+  int i = 0;
+  for(; i<a.m; ++i) {
+    c.registers[i] = // max
+        (a.registers[i] >= b.registers[i])? a.registers[i] : b.registers[i];
+  }
+  return c;
 }
