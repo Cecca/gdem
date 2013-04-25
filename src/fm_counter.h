@@ -45,4 +45,6 @@ fm_cardinality_t fm_size(fm_counter_t counter);
 
 fm_counter_t fm_union(fm_counter_t a, fm_counter_t b);
 
+int fm_counter_equals(fm_counter_t a, fm_counter_t b);
+
 #endif // _COUNTER_H

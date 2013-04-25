@@ -72,3 +72,9 @@ fm_counter_t fm_union(fm_counter_t a, fm_counter_t b) {
   }
   return c;
 }
+
+int fm_counter_equals(fm_counter_t a, fm_counter_t b) {
+  if(a.m != b.m)
+    return 0;
+  return memcmp(a.registers, b.registers, a.m*sizeof(fm_reg_t)) == 0 ;
+}
