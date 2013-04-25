@@ -5,6 +5,7 @@
 #include <errno.h>
 
 #define COUNTER_BITS 2
+#define MAX_ITER 10
 
 /* This routine returns the size of the file it is called with. */
 
@@ -88,7 +89,10 @@ node_t new_node(char *descr) {
   n.counter = new_counter(COUNTER_BITS);
   n.prev_counter = new_counter(COUNTER_BITS);
 
-  // Read neighbours and add to counter
+  counter_add(id, n.counter);
+  counter_add(id, n.prev_counter);
+
+  // Read neighbours
   size_t len = strlen(rest);
   node_id_t neighbours[len];
   int i = -1;
@@ -97,8 +101,8 @@ node_t new_node(char *descr) {
     ++i;
     rc = sscanf(rest, "%d %[01223456789 ]", &neigh, rest);
     neighbours[i] = neigh;
-    counter_add(neigh, n.counter);
-    counter_add(neigh, n.prev_counter);
+//    counter_add(neigh, n.counter);
+//    counter_add(neigh, n.prev_counter);
   }
   if(i>=0) { // if any, copy neighbours
     size_t mem = (i+1)*sizeof(node_id_t);
@@ -109,7 +113,7 @@ node_t new_node(char *descr) {
     n.neighbours = NULL;
   }
 
-  printf("New node: %d\n", n.id);
+//  printf("New node: %d\n", n.id);
   return n;
 }
 
@@ -133,8 +137,19 @@ int main(int argc, char **argv) {
 
   int changed = node_count;
   int i, j, iteration = 0;
-  while(changed > 0 && iteration < 10) {
-    printf("Iteration %d\n", iteration++);
+
+  cardinality_t neigbourhood_function[MAX_ITER];
+  memset(neigbourhood_function, 0, MAX_ITER*sizeof(cardinality_t));
+
+  while(changed > 0 && iteration < MAX_ITER) {
+    // compute neighbourhood function
+
+    for(i=0; i<node_count; ++i) { // for each node
+      neigbourhood_function[iteration] += counter_size(nodes[i].counter);
+    }
+    printf("Iteration %d: N(%d) = %d\n",
+           iteration, iteration, neigbourhood_function[iteration]);
+    iteration++;
 
     changed = 0;
 
@@ -142,18 +157,18 @@ int main(int argc, char **argv) {
       node_t n = nodes[i];
 
       for(j = 0; j<n.num_neighbours; ++j) { // for each neighbour
-        n.counter = counter_union(
-              n.counter, nodes[n.neighbours[j]].prev_counter);
+        n.counter =
+            counter_union(n.counter, nodes[n.neighbours[j]].prev_counter);
       }
       if(!counter_equals(n.counter, n.prev_counter)) {
         ++changed;
       }
       delete_counter(n.prev_counter);
       n.prev_counter = counter_copy(n.counter);
-
     }
 
   }
+
 
   return 0;
 }

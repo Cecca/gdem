@@ -38,11 +38,11 @@ get_file_size (const char * file_name)
 
 /* This routine reads the entire file into memory. */
 
-static unsigned char *
+static char *
 read_whole_file (const char * file_name)
 {
     unsigned s;
-    unsigned char * contents;
+    char * contents;
     FILE * f;
     size_t bytes_read;
     int status;
@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
   printf("Reading file into memory\n");
 
   char *delimiters = " \n\t\r";
-  unsigned char *f;
+  char *f;
   f = read_whole_file(argv[1]);
 
   char *token = strtok(f, delimiters);
