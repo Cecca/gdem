@@ -120,14 +120,10 @@ int hll_counter_equals(hll_counter_t a, hll_counter_t b) {
     return 0;
   }
   int i = 0;
-  printf("Cmp: ");
   for(; i<a.m; ++i) {
-    printf(" %d =? %d | ", a.registers[i], b.registers[i]);
     if(a.registers[i] != b.registers[i]) {
-      printf("\n");
       return 0;
     }
   }
-  printf("\n");
   return 1;
 }

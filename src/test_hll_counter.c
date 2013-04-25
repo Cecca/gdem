@@ -152,8 +152,25 @@ START_TEST (hll_equals) {
 }
 END_TEST
 
-START_TEST (hll_copy) {
+START_TEST (hll_copy_1) {
   hll_counter_t c1 = new_hll_counter(2);
+  hll_counter_t c2 = hll_counter_copy(c1);
+
+  ck_assert(hll_counter_equals(c1,c2));
+
+  delete_hll_counter(c1);
+  delete_hll_counter(c2);
+}
+END_TEST
+
+START_TEST (hll_copy_2) {
+  hll_counter_t c1 = new_hll_counter(2);
+
+  c1.registers[0] = 123;
+  c1.registers[1] = 43;
+  c1.registers[2] = 32;
+  c1.registers[3] = 321;
+
   hll_counter_t c2 = hll_counter_copy(c1);
 
   ck_assert(hll_counter_equals(c1,c2));
@@ -167,7 +184,8 @@ Suite * hll_counter_suite () {
   Suite *s = suite_create("HyperLogLog Counter");
   TCase *tc_core = tcase_create("Core");
   tcase_add_test(tc_core, hll_equals);
-  tcase_add_test(tc_core, hll_copy);
+  tcase_add_test(tc_core, hll_copy_1);
+  tcase_add_test(tc_core, hll_copy_2);
   tcase_add_test(tc_core, hll_counter_rho);
   tcase_add_test(tc_core, hll_insertion);
   tcase_add_test(tc_core, hll_insertion_2);
@@ -196,7 +214,7 @@ int main() {
   int number_failed = 0;
   Suite *s = hll_counter_suite();
   SRunner *sr = srunner_create(s);
-  srunner_run_all(sr, CK_NORMAL);
+  srunner_run_all(sr, CK_VERBOSE);
   number_failed = srunner_ntests_failed(sr);
   srunner_free(sr);
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
