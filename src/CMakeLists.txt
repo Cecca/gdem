@@ -4,6 +4,11 @@ add_executable ( mainCounter
       main.c
 )
 
+add_executable ( serial
+      hll_counter.c
+      serial.c
+)
+
 if(${CHECK_FOUND})
   add_executable ( testFmCounter
     fm_counter.c
