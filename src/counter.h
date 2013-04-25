@@ -26,6 +26,10 @@ inline counter_t counter_union(counter_t a, counter_t b) {
   return fm_union(a, b);
 }
 
+inline int counter_equals(counter_t a, counter_t b) {
+  return fm_counter_equals(a, b);
+}
+
 #else // USE_HYPER_LOG_LOG_COUNTERS
 
 #include "hll_counter.h"
@@ -52,6 +56,10 @@ inline cardinality_t counter_size(counter_t counter) {
 
 inline counter_t counter_union(counter_t a, counter_t b) {
   return hll_union(a, b);
+}
+
+inline int counter_equals(counter_t a, counter_t b) {
+  return hll_counter_equals(a, b);
 }
 
 #endif
