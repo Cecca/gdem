@@ -101,3 +101,10 @@ hll_counter_t hll_union(hll_counter_t a, hll_counter_t b) {
   }
   return c;
 }
+
+int hll_counter_equals(hll_counter_t a, hll_counter_t b) {
+  if(a.b != b.b) {
+    return 0;
+  }
+  return memcmp(a.registers, b.registers, a.m*sizeof(hll_reg_t)) == 0 ;
+}

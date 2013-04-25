@@ -59,4 +59,6 @@ hll_cardinality_t hll_size(hll_counter_t counter);
 
 hll_counter_t hll_union(hll_counter_t a, hll_counter_t b);
 
+int hll_counter_equals(hll_counter_t a, hll_counter_t b);
+
 #endif // _HLL_COUNTER_H_
