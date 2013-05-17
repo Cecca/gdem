@@ -22,6 +22,6 @@ if(${CHECK_FOUND})
   )
   target_link_libraries(testHllCounter ${CHECK_LIBRARIES})
 
-  add_test(testFmCounter ${PROJECT_BINARY_DIR}/bin/testFmCounter)
+#  add_test(testFmCounter ${PROJECT_BINARY_DIR}/bin/testFmCounter)
   add_test(testHllCounter ${PROJECT_BINARY_DIR}/bin/testHllCounter)
 endif()

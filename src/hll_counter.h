@@ -3,8 +3,9 @@
 
 #include <malloc.h>
 #include <string.h>
+#include <inttypes.h>
 
-typedef unsigned int hll_cardinality_t;
+typedef uint32_t hll_cardinality_t;
 
 // ----------------------------------------------------------------------------
 //   Counter Definitions
@@ -12,13 +13,13 @@ typedef unsigned int hll_cardinality_t;
 
 #define HLL_ALPHA 0.72134
 
-typedef unsigned char hll_reg_t;
-typedef unsigned int hll_hash_t;
+typedef uint8_t hll_reg_t;
+typedef uint32_t hll_hash_t;
 
 struct hll_counter {
   size_t m;
   unsigned int b;
-  unsigned int mask;
+  hll_hash_t mask;
   hll_reg_t *registers;
 };
 
