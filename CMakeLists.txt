@@ -11,6 +11,7 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${PROJECT_BINARY_DIR}/lib)
 
 find_package(Check)
+find_package(MPI REQUIRED)
 
 if(${CHECK_FOUND})
   include_directories(${CHECK_INCLUDE_DIRS})
