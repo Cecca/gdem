@@ -3,6 +3,11 @@ add_executable ( serial
       serial.c
 )
 
+add_executable ( mpiHello
+      mpi_hello.c
+)
+target_link_libraries(mpiHello ${MPI_C_LIBRARIES})
+
 if(${CHECK_FOUND})
   add_executable ( testHllCounter
     hll_counter.c
