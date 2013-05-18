@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 2.8)
 project(graph-diameter-estimator-mpi)
 
 find_package(MPI REQUIRED)
-include_directories(MPI_C_INCLUDE_PATH)
+include_directories(${MPI_C_INCLUDE_PATH})
 
 
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm -g -Wall")
