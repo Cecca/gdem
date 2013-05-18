@@ -1,4 +1,4 @@
-#include "counter.h" // use HyperLogLog counters
+#include "hll_counter.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/stat.h>
@@ -65,8 +65,8 @@ typedef unsigned int node_id_t;
 
 typedef struct node node_t;
 struct node {
-  counter_t counter;
-  counter_t prev_counter;
+  hll_counter_t counter;
+  hll_counter_t prev_counter;
   node_id_t id;
   size_t num_neighbours;
   node_id_t *neighbours; // array of indices of out neighbours
@@ -86,11 +86,11 @@ node_t new_node(char *descr) {
   n.id = id;
 
   // init counters
-  n.counter = new_counter(COUNTER_BITS);
-  n.prev_counter = new_counter(COUNTER_BITS);
+  n.counter = hll_cnt_new(COUNTER_BITS);
+  n.prev_counter = hll_cnt_new(COUNTER_BITS);
 
-  counter_add(id, n.counter);
-  counter_add(id, n.prev_counter);
+  hll_cnt_add(id, n.counter);
+  hll_cnt_add(id, n.prev_counter);
 
   // Read neighbours
   size_t len = strlen(rest);
@@ -101,8 +101,8 @@ node_t new_node(char *descr) {
     ++i;
     rc = sscanf(rest, "%d %[01223456789 ]", &neigh, rest);
     neighbours[i] = neigh;
-//    counter_add(neigh, n.counter);
-//    counter_add(neigh, n.prev_counter);
+//    hll_cnt_add(neigh, n.counter);
+//    hll_cnt_add(neigh, n.prev_counter);
   }
   if(i>=0) { // if any, copy neighbours
     size_t mem = (i+1)*sizeof(node_id_t);
@@ -138,14 +138,14 @@ int main(int argc, char **argv) {
   int changed = node_count;
   int i, j, iteration = 0;
 
-  cardinality_t neigbourhood_function[MAX_ITER];
-  memset(neigbourhood_function, 0, MAX_ITER*sizeof(cardinality_t));
+  hll_cardinality_t neigbourhood_function[MAX_ITER];
+  memset(neigbourhood_function, 0, MAX_ITER*sizeof(hll_cardinality_t));
 
   while(changed > 0 && iteration < MAX_ITER) {
     // compute neighbourhood function
 
     for(i=0; i<node_count; ++i) { // for each node
-      neigbourhood_function[iteration] += counter_size(nodes[i].counter);
+      neigbourhood_function[iteration] += hll_cnt_size(nodes[i].counter);
     }
     printf("Iteration %d: N(%d) = %d\n",
            iteration, iteration, neigbourhood_function[iteration]);
@@ -158,13 +158,13 @@ int main(int argc, char **argv) {
 
       for(j = 0; j<n.num_neighbours; ++j) { // for each neighbour
         n.counter =
-            counter_union(n.counter, nodes[n.neighbours[j]].prev_counter);
+            hll_cnt_union(n.counter, nodes[n.neighbours[j]].prev_counter);
       }
-      if(!counter_equals(n.counter, n.prev_counter)) {
+      if(!hll_cnt_equals(n.counter, n.prev_counter)) {
         ++changed;
       }
-      delete_counter(n.prev_counter);
-      n.prev_counter = counter_copy(n.counter);
+      hll_cnt_delete(n.prev_counter);
+      n.prev_counter = hll_cnt_copy(n.counter);
     }
 
   }
