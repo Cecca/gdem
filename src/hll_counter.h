@@ -35,11 +35,11 @@ typedef struct hll_counter hll_counter_t;
  * @param numRegisters
  * @return
  */
-hll_counter_t new_hll_counter(size_t bits);
+hll_counter_t hll_cnt_new(size_t bits);
 
-void delete_hll_counter(hll_counter_t counter);
+void hll_cnt_delete(hll_counter_t counter);
 
-hll_counter_t hll_counter_copy(hll_counter_t counter);
+hll_counter_t hll_cnt_copy(hll_counter_t counter);
 
 // ----------------------------------------------------------------------------
 //   Counter operations
@@ -54,14 +54,14 @@ hll_counter_t hll_counter_copy(hll_counter_t counter);
  * @param x
  * @return
  */
-inline hll_reg_t hll_rho(hll_hash_t elem, unsigned int mask);
+inline hll_reg_t hll_cnt_rho(hll_hash_t elem, unsigned int mask);
 
-void hll_add(hll_hash_t elem, hll_counter_t counter);
+void hll_cnt_add(hll_hash_t elem, hll_counter_t counter);
 
-hll_cardinality_t hll_size(hll_counter_t counter);
+hll_cardinality_t hll_cnt_size(hll_counter_t counter);
 
-hll_counter_t hll_union(hll_counter_t a, hll_counter_t b);
+hll_counter_t hll_cnt_union(hll_counter_t a, hll_counter_t b);
 
-int hll_counter_equals(hll_counter_t a, hll_counter_t b);
+int hll_cnt_equals(hll_counter_t a, hll_counter_t b);
 
 #endif // _HLL_COUNTER_H_

@@ -38,7 +38,7 @@ inline unsigned int log_of_power(unsigned int v) {
   return r;
 }
 
-hll_counter_t new_hll_counter(size_t bits) {
+hll_counter_t hll_cnt_new(size_t bits) {
   assert(("You cannot use more bits than there are in the hash value",
           bits < sizeof(hll_hash_t)*8));
   hll_counter_t c;
@@ -57,11 +57,11 @@ hll_counter_t new_hll_counter(size_t bits) {
   return c;
 }
 
-void delete_hll_counter(hll_counter_t counter){
+void hll_cnt_delete(hll_counter_t counter){
   free(counter.registers);
 }
 
-hll_counter_t hll_counter_copy(hll_counter_t counter) {
+hll_counter_t hll_cnt_copy(hll_counter_t counter) {
   hll_counter_t c;
   c.b = counter.b;
   c.m = counter.m;
@@ -74,7 +74,7 @@ hll_counter_t hll_counter_copy(hll_counter_t counter) {
   return c;
 }
 
-inline hll_reg_t hll_rho(hll_hash_t x, unsigned int mask) {
+inline hll_reg_t hll_cnt_rho(hll_hash_t x, unsigned int mask) {
   if( (x & mask) == 0 ) {
     return sizeof(hll_hash_t)*8;
   }
@@ -86,15 +86,15 @@ inline hll_reg_t hll_rho(hll_hash_t x, unsigned int mask) {
   return i;
 }
 
-void hll_add(hll_hash_t x, hll_counter_t cnt) {
+void hll_cnt_add(hll_hash_t x, hll_counter_t cnt) {
   // Computes the register index
   size_t j = (cnt.b == 0)? 0 : x >> (sizeof(hll_hash_t)*8 - cnt.b);
-  hll_reg_t r = hll_rho(x, cnt.mask);
+  hll_reg_t r = hll_cnt_rho(x, cnt.mask);
   // assigns the maximum between the current value and rho to the register
   cnt.registers[j] = (cnt.registers[j] > r)? cnt.registers[j] : r;
 }
 
-hll_cardinality_t hll_size(hll_counter_t counter) {
+hll_cardinality_t hll_cnt_size(hll_counter_t counter) {
   double denominator = 0;
   int i;
   for (i = 0; i<counter.m; ++i) {
@@ -104,9 +104,9 @@ hll_cardinality_t hll_size(hll_counter_t counter) {
   return counter.m*counter.m*HLL_ALPHA/denominator;
 }
 
-hll_counter_t hll_union(hll_counter_t a, hll_counter_t b) {
+hll_counter_t hll_cnt_union(hll_counter_t a, hll_counter_t b) {
   assert(a.b == b.b);
-  hll_counter_t c = new_hll_counter(a.b);
+  hll_counter_t c = hll_cnt_new(a.b);
   int i = 0;
   for(; i<a.m; ++i) {
     c.registers[i] = // max
@@ -115,7 +115,7 @@ hll_counter_t hll_union(hll_counter_t a, hll_counter_t b) {
   return c;
 }
 
-int hll_counter_equals(hll_counter_t a, hll_counter_t b) {
+int hll_cnt_equals(hll_counter_t a, hll_counter_t b) {
   if(a.b != b.b) {
     return 0;
   }
