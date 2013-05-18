@@ -1,9 +1,7 @@
 #include "mpi.h"
    #include <stdio.h>
 
-int main(argc,argv)
-   int argc;
-   char *argv[]; {
+int main(int argc, char** argv) {
    int  numtasks, rank, len, rc;
    char hostname[MPI_MAX_PROCESSOR_NAME];
 
@@ -18,7 +16,7 @@ int main(argc,argv)
    MPI_Get_processor_name(hostname, &len);
    printf ("Number of tasks= %d My rank= %d Running on %s\n", numtasks,rank,hostname);
 
-   /*******  do some work *******/
+
 
    MPI_Finalize();
 }
