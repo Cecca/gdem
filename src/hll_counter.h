@@ -1,7 +1,7 @@
 #ifndef _HLL_COUNTER_H_
 #define _HLL_COUNTER_H_
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 #include <inttypes.h>
 

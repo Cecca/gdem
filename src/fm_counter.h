@@ -1,7 +1,7 @@
 #ifndef COUNTER_H
 #define COUNTER_H
 
-#include <malloc.h>
+#include <stdlib.h>
 #include <string.h>
 
 

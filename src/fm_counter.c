@@ -1,6 +1,7 @@
 #include "fm_counter.h"
 #include <math.h>
 #include <assert.h>
+#include <stdio.h>
 
 fm_counter_t new_fm_counter(size_t numRegisters) {
   fm_counter_t c;
