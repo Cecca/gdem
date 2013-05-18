@@ -19,7 +19,7 @@ int main(int argc, char** argv) {
   MPI_Get_processor_name(hostname, &len);
 //  printf ("Number of tasks= %d My rank= %d Running on %s\n", numtasks,rank,hostname);
 
-  // do some ping pong
+  // do some circular ping pong
 
   char *inMsg, *outMsg = "ping_pong_ball";
   int msgLen = strlen(outMsg);
@@ -27,14 +27,21 @@ int main(int argc, char** argv) {
 
   if(rank == 0) {
     int dest = 1,
-        src = 1;
+        src = numtasks-1;
     MPI_Send(&outMsg, msgLen, MPI_CHAR, dest, PING_PONG_BALL, MPI_COMM_WORLD);
     printf("Task %d: Sent %s to task %d\n", rank, outMsg, dest);
     MPI_Recv(&inMsg, msgLen, MPI_CHAR, src, PING_PONG_BALL, MPI_COMM_WORLD, &status);
     printf("Task %d: Received %s from task %d\n", rank, inMsg, src);
-  } else if (rank == 1) {
-    int dest = 0,
-        src = 0;
+  } else if(rank == (numtasks-1)) {
+      int dest = 0,
+          src = numtasks-2;
+      MPI_Recv(&inMsg, msgLen, MPI_CHAR, src, PING_PONG_BALL, MPI_COMM_WORLD, &status);
+      printf("Task %d: Received %s from task %d\n", rank, inMsg, src);
+      MPI_Send(&outMsg, msgLen, MPI_CHAR, dest, PING_PONG_BALL, MPI_COMM_WORLD);
+      printf("Task %d: Sent %s to task %d\n", rank, outMsg, dest);
+  } else {
+    int dest = rank + 1,
+        src = rank - 1;
     MPI_Recv(&inMsg, msgLen, MPI_CHAR, src, PING_PONG_BALL, MPI_COMM_WORLD, &status);
     printf("Task %d: Received %s from task %d\n", rank, inMsg, src);
     MPI_Send(&outMsg, msgLen, MPI_CHAR, dest, PING_PONG_BALL, MPI_COMM_WORLD);
