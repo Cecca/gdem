@@ -4,7 +4,7 @@
 #  CHECK_FOUND - system has check
 #  CHECK_INCLUDE_DIR - the check include directory
 #  CHECK_LIBRARIES - check library
-# 
+#
 #  Copyright (c) 2007 Daniel Gollub <dgollub@suse.de>
 #  Copyright (c) 2007 Bjoern Ricks  <b.ricks@fh-osnabrueck.de>
 #
@@ -16,7 +16,8 @@
 INCLUDE( FindPkgConfig )
 
 # Take care about check.pc settings
-PKG_SEARCH_MODULE( CHECK check )
+# FIXME: see why this line is harmful to the build, at least on MacOS X
+# PKG_SEARCH_MODULE( CHECK check )
 
 # Look for CHECK include dir and libraries
 IF( NOT CHECK_FOUND )
@@ -35,7 +36,7 @@ IF( NOT CHECK_FOUND )
                         MESSAGE( FATAL_ERROR "Could NOT find CHECK" )
                 ELSE ( Check_FIND_REQUIRED )
                         IF ( NOT Check_FIND_QUIETLY )
-                                MESSAGE( STATUS "Could NOT find CHECK" )       
+                                MESSAGE( STATUS "Could NOT find CHECK" )
                         ENDIF ( NOT Check_FIND_QUIETLY )
                 ENDIF ( Check_FIND_REQUIRED )
         ENDIF ( CHECK_INCLUDE_DIR AND CHECK_LIBRARIES )
