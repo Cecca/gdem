@@ -1,8 +1,3 @@
-add_executable ( mainCounter
-      hll_counter.c
-      main.c
-)
-
 add_executable ( serial
       hll_counter.c
       serial.c
