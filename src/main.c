@@ -1,6 +1,3 @@
-//#define USE_FLAJOLET_MARTINS_COUNTERS
-#define USE_HYPER_LOG_LOG_COUNTERS
-
 #include "counter.h"
 #include "hll_counter.h"
 #include <string.h>
