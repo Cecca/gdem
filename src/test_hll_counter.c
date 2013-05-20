@@ -250,10 +250,10 @@ Suite * hll_counter_suite () {
 int main() {
   printf(
         "Platform information:\n"
-        "sizeof(int): %d\n"
-        "sizeof(unsigned int): %d\n"
-        "sizeof(hll_reg_t): %d\n"
-        "sizeof(hll_hash_t): %d\n",
+        "sizeof(int): %lu\n"
+        "sizeof(unsigned int): %lu\n"
+        "sizeof(hll_reg_t): %lu\n"
+        "sizeof(hll_hash_t): %lu\n",
         sizeof(int),
         sizeof(unsigned int),
         sizeof(hll_reg_t),

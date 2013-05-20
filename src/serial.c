@@ -23,11 +23,11 @@ get_file_size (const char * file_name)
 
 /* This routine reads the entire file into memory. */
 
-static unsigned char *
+static char *
 read_whole_file (const char * file_name)
 {
     unsigned s;
-    unsigned char * contents;
+    char * contents;
     FILE * f;
     size_t bytes_read;
     int status;
@@ -48,7 +48,7 @@ read_whole_file (const char * file_name)
     bytes_read = fread (contents, sizeof (unsigned char), s, f);
     if (bytes_read != s) {
         fprintf (stderr, "Short read of '%s': expected %d bytes "
-                 "but got %d: %s.\n", file_name, s, bytes_read,
+                 "but got %lu: %s.\n", file_name, s, bytes_read,
                  strerror (errno));
         exit (EXIT_FAILURE);
     }
@@ -123,7 +123,7 @@ int main(int argc, char **argv) {
   node_t nodes[100];
   memset(nodes, 0, sizeof(node_t)*100);
 
-  unsigned char *f = read_whole_file("graph.dat");
+  char *f = read_whole_file("graph.dat");
   char *line = strtok(f, "\n");
   int node_count = 0;
   while(line != NULL) {

@@ -204,7 +204,7 @@ void hll_cnt_add(hll_hash_t elem, hll_counter_t counter);
 hll_cardinality_t hll_cnt_size(hll_counter_t counter);
 
 /**
- * @brief Performs theunion of two counters.
+ * @brief Performs the union of two counters.
  *
  * The union of two counters is defined as the register by register maximum.
  *
