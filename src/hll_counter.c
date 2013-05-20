@@ -2,8 +2,8 @@
 #include <assert.h>
 
 hll_counter_t hll_cnt_new(size_t bits) {
-  assert(("You cannot use more bits than there are in the hash value",
-          bits < sizeof(hll_hash_t)*8));
+  assert( bits < sizeof(hll_hash_t)*8
+         && "You cannot use more bits than there are in the hash value");
   hll_counter_t c;
   c.b = bits;
   c.m = 1 << bits; // 2^bits
