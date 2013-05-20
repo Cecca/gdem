@@ -215,6 +215,18 @@ hll_cardinality_t hll_cnt_size(hll_counter_t counter);
 hll_counter_t hll_cnt_union(hll_counter_t a, hll_counter_t b);
 
 /**
+ * @brief Performs the inplace union of two counters.
+ *
+ * This is the same as hll_cnt_union(hll_counter_t, hll_counter_t) but instead
+ * of returning a newly allocated counter the result is placed in the first
+ * parameter.
+ *
+ * @param a the first counter and the one that will hold the result
+ * @param b the second counter
+ */
+void hll_cnt_union_i(hll_counter_t * firstAndResult, hll_counter_t * second);
+
+/**
  * @brief Checks if two counters are equals.
  *
  * Two counters are equal if they have the same `b` and their registers

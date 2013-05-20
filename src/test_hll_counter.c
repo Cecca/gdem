@@ -169,7 +169,7 @@ START_TEST (hll_copy_2) {
   c1.registers[0] = 123;
   c1.registers[1] = 43;
   c1.registers[2] = 32;
-  c1.registers[3] = 321;
+  c1.registers[3] = 21;
 
   hll_counter_t c2 = hll_cnt_copy(c1);
 
@@ -180,10 +180,59 @@ START_TEST (hll_copy_2) {
 }
 END_TEST
 
+START_TEST (hll_union_i) {
+  hll_counter_t first, second;
+
+  // first test
+  // ==========
+  //
+  // two counters with 4 registers
+  first = hll_cnt_new(2);
+  second = hll_cnt_new(2);
+
+  first.registers[0] = 2;
+  second.registers[3] = 4;
+
+  hll_cnt_union_i(&first, &second);
+
+  ck_assert_int_eq(first.registers[0], 2);
+  ck_assert_int_eq(first.registers[1], 0);
+  ck_assert_int_eq(first.registers[2], 0);
+  ck_assert_int_eq(first.registers[3], 4);
+
+  hll_cnt_delete(first);
+  hll_cnt_delete(second);
+
+  // second test
+  // ===========
+  //
+  // two counters with 4 registers
+  first = hll_cnt_new(2);
+  second = hll_cnt_new(2);
+
+  first.registers[0] = 2;
+  first.registers[1] = 4;
+  first.registers[3] = 6;
+  second.registers[1] = 5;
+  second.registers[3] = 4;
+
+  hll_cnt_union_i(&first, &second);
+
+  ck_assert_int_eq(first.registers[0], 2);
+  ck_assert_int_eq(first.registers[1], 5);
+  ck_assert_int_eq(first.registers[2], 0);
+  ck_assert_int_eq(first.registers[3], 6);
+
+  hll_cnt_delete(first);
+  hll_cnt_delete(second);
+}
+END_TEST
+
 Suite * hll_counter_suite () {
   Suite *s = suite_create("HyperLogLog Counter");
   TCase *tc_core = tcase_create("Core");
   tcase_add_test(tc_core, hll_equals);
+  tcase_add_test(tc_core, hll_union_i);
   tcase_add_test(tc_core, hll_copy_1);
   tcase_add_test(tc_core, hll_copy_2);
   tcase_add_test(tc_core, hll_counter_rho_test);

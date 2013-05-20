@@ -67,16 +67,27 @@ hll_cardinality_t hll_cnt_size(hll_counter_t counter) {
   return counter.m*counter.m*HLL_ALPHA/denominator;
 }
 
+#define MAX(a, b) (a >= b)? a : b
+
 hll_counter_t hll_cnt_union(hll_counter_t a, hll_counter_t b) {
   assert(a.b == b.b);
   hll_counter_t c = hll_cnt_new(a.b);
   int i = 0;
   for(; i<a.m; ++i) {
-    c.registers[i] = // max
-        (a.registers[i] >= b.registers[i])? a.registers[i] : b.registers[i];
+    c.registers[i] = MAX(a.registers[i], b.registers[i]);
   }
   return c;
 }
+
+void hll_cnt_union_i(hll_counter_t *a, hll_counter_t *b) {
+  assert(a->b == b->b);
+  int i=0;
+  for(; i<a->m; ++i) {
+    a->registers[i] = MAX(a->registers[i], b->registers[i]);
+  }
+}
+
+#undef MAX
 
 int hll_cnt_equals(hll_counter_t a, hll_counter_t b) {
   if(a.b != b.b) {
