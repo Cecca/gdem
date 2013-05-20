@@ -208,9 +208,9 @@ hll_cardinality_t hll_cnt_size(hll_counter_t counter);
  *
  * The union of two counters is defined as the register by register maximum.
  *
- * @param a
- * @param b
- * @return
+ * @param a the first counter
+ * @param b the second counter
+ * @return the union of the two counters
  */
 hll_counter_t hll_cnt_union(hll_counter_t a, hll_counter_t b);
 
