@@ -165,6 +165,16 @@ hll_cardinality_t hll_cnt_size(hll_counter_t counter);
  */
 hll_counter_t hll_cnt_union(hll_counter_t a, hll_counter_t b);
 
+/**
+ * @brief Checks if two counters are equals.
+ *
+ * Two counters are equal if they have the same `b` and their registers
+ * are equals.
+ *
+ * @param a the first counter
+ * @param b the second counter
+ * @return `0` if the counters are not equals.
+ */
 int hll_cnt_equals(hll_counter_t a, hll_counter_t b);
 
 #endif // _HLL_COUNTER_H_
