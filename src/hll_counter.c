@@ -88,11 +88,8 @@ int hll_cnt_equals(hll_counter_t * a, hll_counter_t * b) {
   if(a->b != b->b) {
     return 0;
   }
-  int i = 0;
-  for(; i<a->m; ++i) {
-    if(a->registers[i] != b->registers[i]) {
-      return 0;
-    }
+  if(memcmp(a->registers, b->registers, a->m*sizeof(hll_reg_t)) != 0) {
+    return 0;
   }
   return 1;
 }
