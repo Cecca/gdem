@@ -1,43 +1,6 @@
 #include "hll_counter.h"
 #include <assert.h>
 
-/**
- * From http://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2
- */
-inline size_t nearest_power(size_t v) {
-  // If it is already a power of two, return it.
-  if((v & (v - 1)) == 0)
-    return v;
-
-  v--;
-  v |= v >> 1;
-  v |= v >> 2;
-  v |= v >> 4;
-  v |= v >> 8;
-  v |= v >> 16;
-  if(sizeof(size_t) == 8) { // if it is a 64 bit word
-    v |= v >> 32;
-  }
-  v++;
-  return v;
-}
-
-/**
- * Finds the log of a number that is a power of 2
- * TODO check if it works
- */
-inline unsigned int log_of_power(unsigned int v) {
-  static const unsigned int b[] = {0xAAAAAAAA, 0xCCCCCCCC, 0xF0F0F0F0,
-                                   0xFF00FF00, 0xFFFF0000};
-  register unsigned int r = (v & b[0]) != 0;
-  int i;
-  for (i = 4; i > 0; i--) // unroll for speed...
-  {
-    r |= ((v & b[i]) != 0) << i;
-  }
-  return r;
-}
-
 hll_counter_t hll_cnt_new(size_t bits) {
   assert(("You cannot use more bits than there are in the hash value",
           bits < sizeof(hll_hash_t)*8));
