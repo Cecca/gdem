@@ -1,3 +1,21 @@
+/**
+ * @file   hll_counter.h
+ * @brief  Header for HyperLogLog counters.
+ *
+ * This header defines data structures and operations related to
+ * HyperLogLog counters
+ * [FlFuGaMe07](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf).
+ *
+ * This counters are probabilistic data structures used to keep track
+ * of the cardinality of large multisets.
+ *
+ * On a counter we can perform the following operations
+ *
+ *  - add a new element
+ *  - query for the estimated size of the underlying multiset
+ *  - get the union of two counters.
+ */
+
 #ifndef _HLL_COUNTER_H_
 #define _HLL_COUNTER_H_
 
@@ -5,21 +23,58 @@
 #include <string.h>
 #include <inttypes.h>
 
+/**
+ * @brief Numeric type of estimated cardinalities.
+ *
+ * This typedef is used to hide the actual numeric type used to represent
+ * multiset cardinalities.
+ */
 typedef uint32_t hll_cardinality_t;
 
 // ----------------------------------------------------------------------------
 //   Counter Definitions
 // ----------------------------------------------------------------------------
 
+/**
+ * Correction constant for the estimation
+ */
 #define HLL_ALPHA 0.72134
 
+/**
+ * @brief Type of counter registers
+ */
 typedef uint8_t hll_reg_t;
+
+/**
+ * @brief Type of hash values.
+ *
+ * This data type is the input of the add operation.
+ */
 typedef uint32_t hll_hash_t;
 
+/**
+ * @brief This struct is the actual counter.
+ *
+ * It contains an array of registers and their number, the number of
+ * bits to be used in partitioning operations and the mask to be used during
+ * update operations.
+ */
 struct hll_counter {
+  /**
+   * The number of registers.
+   */
   size_t m;
+  /**
+   * The number of bits used to select the register to update.
+   */
   unsigned int b;
+  /**
+   * The mask used during updates.
+   */
   hll_hash_t mask;
+  /**
+   * The array of registers of this counter.
+   */
   hll_reg_t *registers;
 };
 
