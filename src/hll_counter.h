@@ -4,16 +4,63 @@
  *
  * This header defines data structures and operations related to
  * HyperLogLog counters
- * [FlFuGaMe07](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf).
+ * [[FlFuGaMe07](http://algo.inria.fr/flajolet/Publications/FlFuGaMe07.pdf)].
+ *
+ * Introduction
+ * ------------
  *
  * This counters are probabilistic data structures used to keep track
  * of the cardinality of large multisets.
  *
+ * Operations allowed on the counter
+ * ---------------------------------
+ *
  * On a counter we can perform the following operations
  *
- *  - add a new element
- *  - query for the estimated size of the underlying multiset
- *  - get the union of two counters.
+ *  - add a new element: hll_cnt_add(hll_hash_t, hll_counter_t)
+ *  - query for the estimated size of the underlying multiset:
+ *    hll_cnt_size(hll_counter_t)
+ *  - get the union of two counters: hll_cnt_union(hll_counter_t, hll_counter_t)
+ *
+ * Algorithm
+ * ---------
+ *
+ * The HyperLogLog enables to keep track of the cardinalities of very large
+ * multisets in very little space.
+ *
+ * In fact this algorithm only needs \f$O(\log\log n)\f$
+ * memory (hence the name) to keep track of cardinalities up to \f$n\f$.
+ *
+ * In the description that follows we assume that we have an hash function
+ * \f$h(x)\f$ that maps the set elements into binary strings.
+ * The function \f$\rho(y)\f$ is used to get the position of the leftmost 1-bit
+ * in the binary string \f$y\f$.
+ * 
+ * This algorithm, uses stochastic averaging to control
+ * the standard error on the estimated value. The input multiset
+ * \f$\mathcal{M}\f$ is partitioned in \f$m = 2^b\f$ multisets
+ * \f$\mathcal{M}_1 \dots \mathcal{M}_m\f$ using the first \f$b\f$ bits of the
+ * hashed values.
+ * 
+ * Then for each \f$\mathcal{M}_j\f$ the
+ * observable is
+ * \f[
+ *   M^j = \max_{x \in \mathcal{M}_j} \rho(x)
+ * \f]
+ * 
+ * The intuition underlying the algorithm is the following: each multiset
+ * \f$\mathcal{M}_j\f$ is expected to contain \f$n/m\f$ distinct elements at
+ * the end of the execution. Hence the parameter \f$M^j\f$ should be close to
+ * \f$\log_2(n/m)\f$. The harmonic mean of the quantities \f$2^{M^j}\f$ should
+ * then be in the order of \f$n/m\f$.
+ * 
+ * The algorithm returns the following estimate of the cardinality
+ * \f[
+ *  N = \frac{\alpha m^2}{\sum_{j=1}^{m} 2^{-M^j}}
+ * \f]
+ * 
+ * The parameter \f$\alpha\f$ is used to correct a multiplicative bias of the
+ * algorithm and is defined in macro ::HLL_ALPHA.
  */
 
 #ifndef _HLL_COUNTER_H_
@@ -41,7 +88,9 @@ typedef uint32_t hll_cardinality_t;
 #define HLL_ALPHA 0.72134
 
 /**
- * @brief Type of counter registers
+ * @brief Type of counter registers.
+ *
+ * This data type represents a single register of the counter.
  */
 typedef uint8_t hll_reg_t;
 
