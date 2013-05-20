@@ -5,45 +5,48 @@
 #include <limits.h>
 
 START_TEST (hll_counter_rho_test) {
-  hll_counter_t c = hll_cnt_new(3);
+  hll_counter_t *c = hll_cnt_new(3);
 
-  ck_assert_int_eq(1, hll_cnt_rho(0b1010001, c.mask));
+  ck_assert_int_eq(1, hll_cnt_rho(0b1010001, c->mask));
 
-  ck_assert_int_eq(5, hll_cnt_rho(0b010000, c.mask));
+  ck_assert_int_eq(5, hll_cnt_rho(0b010000, c->mask));
 
-  ck_assert_int_eq(5, hll_cnt_rho(0b010000, c.mask));
+  ck_assert_int_eq(5, hll_cnt_rho(0b010000, c->mask));
 
   hll_cnt_delete(c);
 }
 END_TEST
 
 START_TEST (hll_insertion) {
-  hll_counter_t c = hll_cnt_new(0);
+  hll_counter_t *c = hll_cnt_new(0);
 
   hll_cnt_add(0b0010000, c);
-  ck_assert_int_eq(5, c.registers[0]);
+  ck_assert_int_eq(5, c->registers[0]);
 
   hll_cnt_add(0b1000000, c);
-  ck_assert_int_eq(7, c.registers[0]);
+  ck_assert_int_eq(7, c->registers[0]);
 
   hll_cnt_add(0b10000010, c);
-  ck_assert_int_eq(7, c.registers[0]);
+  ck_assert_int_eq(7, c->registers[0]);
+
+  hll_cnt_delete(c);
 }
 END_TEST
 
 START_TEST (hll_insertion_2) {
-  hll_counter_t c = hll_cnt_new(1);
+  hll_counter_t *c = hll_cnt_new(1);
 
   hll_cnt_add(0b0010000, c);
   hll_cnt_add(~0, c);
-  ck_assert_int_eq(5, c.registers[0]);
-  ck_assert_int_eq(1, c.registers[1]);
+  ck_assert_int_eq(5, c->registers[0]);
+  ck_assert_int_eq(1, c->registers[1]);
 
+  hll_cnt_delete(c);
 }
 END_TEST
 
 START_TEST (hll_insertion_3) {
-  hll_counter_t c = hll_cnt_new(2);
+  hll_counter_t *c = hll_cnt_new(2);
 
   int shift = sizeof(hll_hash_t)*8 -2;
 
@@ -51,11 +54,12 @@ START_TEST (hll_insertion_3) {
   hll_cnt_add(1<<shift | 4, c);
   hll_cnt_add(2<<shift | 4, c);
   hll_cnt_add(3<<shift | 4, c);
-  ck_assert_int_ne(0, c.registers[0]);
-  ck_assert_int_ne(0, c.registers[1]);
-  ck_assert_int_ne(0, c.registers[2]);
-  ck_assert_int_ne(0, c.registers[3]);
+  ck_assert_int_ne(0, c->registers[0]);
+  ck_assert_int_ne(0, c->registers[1]);
+  ck_assert_int_ne(0, c->registers[2]);
+  ck_assert_int_ne(0, c->registers[3]);
 
+  hll_cnt_delete(c);
 }
 END_TEST
 
@@ -67,10 +71,12 @@ START_TEST (hll_test_size) {
    *     0.72134 / (2^-5) = 23.08 -> 23
    *
    */
-  hll_counter_t c = hll_cnt_new(0);
-  c.registers[0] = 5;
+  hll_counter_t *c = hll_cnt_new(0);
+  c->registers[0] = 5;
   hll_cardinality_t actual = hll_cnt_size(c);
   ck_assert_int_eq(23, actual);
+
+  hll_cnt_delete(c);
 }
 END_TEST
 
@@ -82,11 +88,13 @@ START_TEST (hll_test_size_2) {
    *     0.72134*4 / ( (2^-5) + (2^-3) ) = 18.46 -> 18
    *
    */
-  hll_counter_t c = hll_cnt_new(1);
-  c.registers[0] = 5;
-  c.registers[1] = 3;
+  hll_counter_t *c = hll_cnt_new(1);
+  c->registers[0] = 5;
+  c->registers[1] = 3;
   hll_cardinality_t actual = hll_cnt_size(c);
   ck_assert_int_eq(18, actual);
+
+  hll_cnt_delete(c);
 }
 END_TEST
 
@@ -96,7 +104,7 @@ int compare (const void * a, const void * b)
 }
 
 START_TEST (hll_size_precision) {
-  hll_counter_t c = hll_cnt_new(9);
+  hll_counter_t *c = hll_cnt_new(9);
   int numInsertions = 999999;
   hll_hash_t stream[numInsertions];
   int i=0;
@@ -124,8 +132,8 @@ START_TEST (hll_size_precision) {
   printf("n: %d\nEstimate: %d\nError: %f\n", n, estimate, error);
 
   ck_assert_int_ne(0, estimate);
-  for(i = 0; i<c.m; ++i) {
-    ck_assert_int_ne(0, c.registers[i]);
+  for(i = 0; i < c->m; ++i) {
+    ck_assert_int_ne(0, c->registers[i]);
   }
   ck_assert(-2.5 <= error && error <= 2.5);
 
@@ -135,8 +143,8 @@ END_TEST
 
 START_TEST (hll_equals) {
   hll_counter_t
-      c1 = hll_cnt_new(2),
-      c2 = hll_cnt_new(2);
+      *c1 = hll_cnt_new(2),
+      *c2 = hll_cnt_new(2);
 
   ck_assert(hll_cnt_equals(c1,c2));
 
@@ -145,16 +153,17 @@ START_TEST (hll_equals) {
 
   ck_assert(hll_cnt_equals(c1,c2));
 
-  c2.registers[0] = 14; // set the first register to  different value
+  c2->registers[0] = 14; // set the first register to  different value
   ck_assert(!hll_cnt_equals(c1,c2));
+
   hll_cnt_delete(c1);
   hll_cnt_delete(c2);
 }
 END_TEST
 
 START_TEST (hll_copy_1) {
-  hll_counter_t c1 = hll_cnt_new(2);
-  hll_counter_t c2 = hll_cnt_copy(c1);
+  hll_counter_t *c1 = hll_cnt_new(2);
+  hll_counter_t *c2 = hll_cnt_copy(c1);
 
   ck_assert(hll_cnt_equals(c1,c2));
 
@@ -164,14 +173,14 @@ START_TEST (hll_copy_1) {
 END_TEST
 
 START_TEST (hll_copy_2) {
-  hll_counter_t c1 = hll_cnt_new(2);
+  hll_counter_t *c1 = hll_cnt_new(2);
 
-  c1.registers[0] = 123;
-  c1.registers[1] = 43;
-  c1.registers[2] = 32;
-  c1.registers[3] = 21;
+  c1->registers[0] = 123;
+  c1->registers[1] = 43;
+  c1->registers[2] = 32;
+  c1->registers[3] = 21;
 
-  hll_counter_t c2 = hll_cnt_copy(c1);
+  hll_counter_t *c2 = hll_cnt_copy(c1);
 
   ck_assert(hll_cnt_equals(c1,c2));
 
@@ -181,7 +190,7 @@ START_TEST (hll_copy_2) {
 END_TEST
 
 START_TEST (hll_union_i) {
-  hll_counter_t first, second;
+  hll_counter_t *first, *second;
 
   // first test
   // ==========
@@ -190,15 +199,15 @@ START_TEST (hll_union_i) {
   first = hll_cnt_new(2);
   second = hll_cnt_new(2);
 
-  first.registers[0] = 2;
-  second.registers[3] = 4;
+  first->registers[0] = 2;
+  second->registers[3] = 4;
 
-  hll_cnt_union_i(&first, &second);
+  hll_cnt_union_i(first, second);
 
-  ck_assert_int_eq(first.registers[0], 2);
-  ck_assert_int_eq(first.registers[1], 0);
-  ck_assert_int_eq(first.registers[2], 0);
-  ck_assert_int_eq(first.registers[3], 4);
+  ck_assert_int_eq(first->registers[0], 2);
+  ck_assert_int_eq(first->registers[1], 0);
+  ck_assert_int_eq(first->registers[2], 0);
+  ck_assert_int_eq(first->registers[3], 4);
 
   hll_cnt_delete(first);
   hll_cnt_delete(second);
@@ -210,18 +219,18 @@ START_TEST (hll_union_i) {
   first = hll_cnt_new(2);
   second = hll_cnt_new(2);
 
-  first.registers[0] = 2;
-  first.registers[1] = 4;
-  first.registers[3] = 6;
-  second.registers[1] = 5;
-  second.registers[3] = 4;
+  first->registers[0] = 2;
+  first->registers[1] = 4;
+  first->registers[3] = 6;
+  second->registers[1] = 5;
+  second->registers[3] = 4;
 
-  hll_cnt_union_i(&first, &second);
+  hll_cnt_union_i(first, second);
 
-  ck_assert_int_eq(first.registers[0], 2);
-  ck_assert_int_eq(first.registers[1], 5);
-  ck_assert_int_eq(first.registers[2], 0);
-  ck_assert_int_eq(first.registers[3], 6);
+  ck_assert_int_eq(first->registers[0], 2);
+  ck_assert_int_eq(first->registers[1], 5);
+  ck_assert_int_eq(first->registers[2], 0);
+  ck_assert_int_eq(first->registers[3], 6);
 
   hll_cnt_delete(first);
   hll_cnt_delete(second);

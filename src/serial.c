@@ -65,8 +65,8 @@ typedef unsigned int node_id_t;
 
 typedef struct node node_t;
 struct node {
-  hll_counter_t counter;
-  hll_counter_t prev_counter;
+  hll_counter_t * counter;
+  hll_counter_t * prev_counter;
   node_id_t id;
   size_t num_neighbours;
   node_id_t *neighbours; // array of indices of out neighbours

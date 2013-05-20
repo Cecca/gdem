@@ -149,7 +149,7 @@ typedef struct hll_counter hll_counter_t;
  * @param bits: the bits to index the registers.
  * @return a new hll_counter_t instance
  */
-hll_counter_t hll_cnt_new(size_t bits);
+hll_counter_t * hll_cnt_new(size_t bits);
 
 /**
  * @brief Deletes a counter.
@@ -158,7 +158,7 @@ hll_counter_t hll_cnt_new(size_t bits);
  *
  * @param counter the counter to be deallocated.
  */
-void hll_cnt_delete(hll_counter_t counter);
+void hll_cnt_delete(hll_counter_t * counter);
 
 /**
  * @brief Copies a counter.
@@ -169,7 +169,7 @@ void hll_cnt_delete(hll_counter_t counter);
  * @param counter the counter to copy
  * @return the new copy of the counter.
  */
-hll_counter_t hll_cnt_copy(hll_counter_t counter);
+hll_counter_t * hll_cnt_copy(hll_counter_t * counter);
 
 // ----------------------------------------------------------------------------
 //   Counter operations
@@ -193,7 +193,7 @@ inline hll_reg_t hll_cnt_rho(hll_hash_t elem, unsigned int mask);
  * @param elem the element to be added.
  * @param counter the counter to be updated.
  */
-void hll_cnt_add(hll_hash_t elem, hll_counter_t counter);
+void hll_cnt_add(hll_hash_t elem, hll_counter_t * counter);
 
 /**
  * @brief Estimates the cardinality of the underlying multiset.
@@ -201,7 +201,7 @@ void hll_cnt_add(hll_hash_t elem, hll_counter_t counter);
  * @param counter the counter used to get the estimation.
  * @return the estimated cardinality of the multiset.
  */
-hll_cardinality_t hll_cnt_size(hll_counter_t counter);
+hll_cardinality_t hll_cnt_size(hll_counter_t * counter);
 
 /**
  * @brief Performs the union of two counters.
@@ -212,7 +212,7 @@ hll_cardinality_t hll_cnt_size(hll_counter_t counter);
  * @param b the second counter
  * @return the union of the two counters
  */
-hll_counter_t hll_cnt_union(hll_counter_t a, hll_counter_t b);
+hll_counter_t * hll_cnt_union(hll_counter_t * a, hll_counter_t * b);
 
 /**
  * @brief Performs the inplace union of two counters.
@@ -236,6 +236,6 @@ void hll_cnt_union_i(hll_counter_t * firstAndResult, hll_counter_t * second);
  * @param b the second counter
  * @return `0` if the counters are not equals.
  */
-int hll_cnt_equals(hll_counter_t a, hll_counter_t b);
+int hll_cnt_equals(hll_counter_t * a, hll_counter_t * b);
 
 #endif // _HLL_COUNTER_H_
