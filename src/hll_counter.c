@@ -26,16 +26,10 @@ void hll_cnt_delete(hll_counter_t * counter) {
 }
 
 hll_counter_t * hll_cnt_copy(hll_counter_t * counter) {
-  hll_counter_t * c = malloc(sizeof(hll_counter_t));
-  c->b = counter->b;
-  c->m = counter->m;
-  c->mask = counter->mask;
-  c->registers = malloc(counter->m*sizeof(hll_reg_t));
-  int i = 0;
-  for(; i < counter->m; ++i) {
-    c->registers[i] = counter->registers[i];
-  }
-  return c;
+  hll_counter_t *copy = malloc(sizeof(hll_counter_t));
+  memcpy(copy, counter, sizeof(hll_counter_t));
+  memcpy(copy->registers, counter->registers, counter->m*sizeof(hll_reg_t));
+  return copy;
 }
 
 inline hll_reg_t hll_cnt_rho(hll_hash_t x, unsigned int mask) {
