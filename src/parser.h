@@ -9,6 +9,8 @@
 #ifndef _PARSER_H_
 #define _PARSER_H_
 
+#include "graph.h"
+
 /**
  * @brief Builds a heap-allocated node from a string description
  *
@@ -33,6 +35,12 @@
  * the following
  *
  *     0 | 1 3 5 | 2
+ *
+ * A node with no neighbours is represented in this way (suppose its id is `2`)
+ *
+ *     2 | |
+ *
+ * That is, the pipes are **mandatory**
  *
  * @param descr the description of the node
  * @return a heap allocated node struct
