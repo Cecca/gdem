@@ -1,6 +1,7 @@
 #include "parser.h"
 #include <string.h>
 #include <stdio.h>
+#include "null.h"
 
 void error_message(char* descr) {
   fprintf(stderr, "Error in format of description: < %s > SKIPPING\n", descr);
@@ -17,8 +18,9 @@ node_t * parse_node_descr(char *descr) {
 
   if(read != 3) {
     error_message(descr);
+    return NULL;
   }
 
-  node_t * node = 0;
+  node_t * node = NULL;
   return node;
 }

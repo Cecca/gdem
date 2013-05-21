@@ -17,6 +17,9 @@
  * This function takes a string that contains the description of a node, parses
  * it, allocates a new node_t struct and populates it with the correct values.
  *
+ * **Attention**: it the description os not well formed, the function
+ * returns NULL.
+ *
  * Description format
  * ------------------
  *
@@ -43,7 +46,7 @@
  * That is, the pipes are **mandatory**
  *
  * @param descr the description of the node
- * @return a heap allocated node struct
+ * @return a heap allocated node struct, NULL if there are errors
  */
 node_t * parse_node_descr(char * descr);
 
