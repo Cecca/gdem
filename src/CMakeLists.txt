@@ -19,6 +19,7 @@ if(${CHECK_FOUND})
 
   add_executable ( testParser
     parser.c
+    graph.c
     test_parser.c
   )
   target_link_libraries(testParser ${CHECK_LIBRARIES})
