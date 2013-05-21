@@ -33,18 +33,18 @@ START_TEST (parse_node_descr_test_1) {
   node_t *node = parse_node_descr(descr);
 
   ck_assert (node != NULL);
-
-  ck_assert_int_eq(node->id, 1);
-
-  ck_assert_int_eq(node->out[0], 2);
-  ck_assert_int_eq(node->out[1], 3);
-  ck_assert_int_eq(node->out[2], 4);
-
-  ck_assert_int_eq(node->in[0], 5);
-  ck_assert_int_eq(node->in[1], 6);
-  ck_assert_int_eq(node->in[2], 7);
-
+  
   if (node != NULL) {
+    ck_assert_int_eq(node->id, 1);
+
+    ck_assert_int_eq(node->out[0], 2);
+    ck_assert_int_eq(node->out[1], 3);
+    ck_assert_int_eq(node->out[2], 4);
+
+    ck_assert_int_eq(node->in[0], 5);
+    ck_assert_int_eq(node->in[1], 6);
+    ck_assert_int_eq(node->in[2], 7);
+
     node_delete(node);
   }
 }
