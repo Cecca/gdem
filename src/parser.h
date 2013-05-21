@@ -56,4 +56,11 @@ node_t * parse_node_descr(char * descr);
  */
 int count_numbers(char * str);
 
+/*
+ * Populates the `adj` array with `n` integers extracted from the string
+ * `adj_str`.
+ * Returns -1 on error, the number of inserted elements otherwise
+ */
+int populate_adjacency(char * adj_str, node_id_t * adj, int n);
+
 #endif // _PARSER_H_

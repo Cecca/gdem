@@ -23,7 +23,31 @@ node_t * parse_node_descr(char *descr) {
     return NULL;
   }
 
-  node_t * node = NULL;
+  int n_in = count_numbers(in_s);
+  int n_out = count_numbers(out_s);
+
+  if (n_in < 0 || n_out < 0) {
+    error_message(descr);
+    return NULL;
+  }
+
+  node_t * node = node_new(id, n_out, n_in);
+
+  int inserted = -1;
+  inserted = populate_adjacency(in_s, node->in, n_in);
+  if (inserted != n_in) {
+    error_message(descr);
+    node_delete(node);
+    return NULL;
+  }
+
+  populate_adjacency(out_s, node->out, n_out);
+  if (inserted != n_out) {
+    error_message(descr);
+    node_delete(node);
+    return NULL;
+  }
+
   return node;
 }
 
@@ -44,4 +68,9 @@ int count_numbers (char *str) {
     }
   }
   return count;
+}
+
+int populate_adjacency(char *adj_str, node_id_t *adj, int n) {
+
+  return -1;
 }
