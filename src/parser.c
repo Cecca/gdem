@@ -71,6 +71,25 @@ int count_numbers (char *str) {
 }
 
 int populate_adjacency(char *adj_str, node_id_t *adj, int n) {
+  char *str = adj_str;
+  node_id_t elem;
+  int i = 0;
 
-  return -1;
+  while (str != NULL && i<n) {
+    elem = strtol(str, &str, 10);
+    printf("%d, %d\n", i, elem);
+    adj[i] = elem;
+    ++i;
+  }
+
+  // there are still some elements
+  if (str != NULL && strcmp(str, "") != 0) {
+    printf("%s\n", str);
+    fprintf(stderr,
+            "%s:%d: ERROR, trying to populate an andjacency list with more "
+            "values than the array can host\n", __FILE__, __LINE__);
+    return -1;
+  }
+
+  return i+1;
 }
