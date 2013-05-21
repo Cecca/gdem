@@ -1,6 +1,7 @@
 #include <check.h>
 #include <stdio.h>
 #include "parser.h"
+#include "graph.h"
 
 START_TEST (count_numbers_test) {
   char *str = "1 2 3 4";
@@ -27,11 +28,34 @@ START_TEST (populate_adjacency_test) {
 }
 END_TEST
 
+START_TEST (parse_node_descr_test_1) {
+  char *descr = "1 | 2 3 4 | 5 6 7";
+  node_t *node = parse_node_descr(descr);
+
+  ck_assert (node != NULL);
+
+  ck_assert_int_eq(node->id, 1);
+
+  ck_assert_int_eq(node->out[0], 2);
+  ck_assert_int_eq(node->out[1], 3);
+  ck_assert_int_eq(node->out[2], 4);
+
+  ck_assert_int_eq(node->in[0], 5);
+  ck_assert_int_eq(node->in[1], 6);
+  ck_assert_int_eq(node->in[2], 7);
+
+  if (node != NULL) {
+    node_delete(node);
+  }
+}
+END_TEST
+
 Suite * parser_suite () {
   Suite *s = suite_create("Parser");
   TCase *tc_core = tcase_create("Core");
   tcase_add_test(tc_core, count_numbers_test);
   tcase_add_test(tc_core, populate_adjacency_test);
+  tcase_add_test(tc_core, parse_node_descr_test_1);
   suite_add_tcase(s, tc_core);
 
   return s;
