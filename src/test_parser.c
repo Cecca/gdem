@@ -8,6 +8,9 @@ START_TEST (count_numbers_test) {
 
   str = "12 3 4 5 2 54  ";
   ck_assert_int_eq(count_numbers(str), 6);
+
+  str = "12 3 4 5 2 string 54  ";
+  ck_assert_int_eq(count_numbers(str), -1);
 }
 END_TEST
 
