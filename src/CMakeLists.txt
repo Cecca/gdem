@@ -16,4 +16,12 @@ if(${CHECK_FOUND})
   target_link_libraries(testHllCounter ${CHECK_LIBRARIES})
 
   add_test(testHllCounter ${PROJECT_BINARY_DIR}/bin/testHllCounter)
+
+  add_executable ( testParser
+    parser.c
+    test_parser.c
+  )
+  target_link_libraries(testParser ${CHECK_LIBRARIES})
+
+  add_test(testParser ${PROJECT_BINARY_DIR}/bin/testParser)
 endif()
