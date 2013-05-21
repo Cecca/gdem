@@ -50,4 +50,10 @@
  */
 node_t * parse_node_descr(char * descr);
 
+/*
+ * Given a string, counts the number of distinct numbers in it.
+ * Returns `-1` on error
+ */
+int count_numbers(char * str);
+
 #endif // _PARSER_H_

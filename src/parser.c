@@ -1,7 +1,9 @@
 #include "parser.h"
 #include <string.h>
 #include <stdio.h>
+#include <ctype.h>
 #include "null.h"
+#include "boolean.h"
 
 void error_message(char* descr) {
   fprintf(stderr, "Error in format of description: < %s > SKIPPING\n", descr);
@@ -23,4 +25,23 @@ node_t * parse_node_descr(char *descr) {
 
   node_t * node = NULL;
   return node;
+}
+
+int count_numbers (char *str) {
+  int count = 0;
+  int i=0;
+  int was_digit = FALSE;
+  for (; i<strlen(str); ++i) {
+    if (isdigit(str[i])) {
+      if (!was_digit) {
+        ++count;
+      }
+      was_digit = TRUE;
+    } else if (isspace(str[i])) {
+      was_digit = FALSE;
+    } else {
+      return -1;
+    }
+  }
+  return count;
 }
