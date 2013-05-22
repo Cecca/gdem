@@ -51,16 +51,34 @@ START_TEST (parse_node_descr_test_1) {
 END_TEST
 
 START_TEST (count_lines_test) {
-  int l = count_lines("a\nsdijb\naosjfblk\nalks\nlkfn\nkajs\nnfk\nlf");
+  int l = count_lines(
+        "a\n"
+        "sdijb\n"
+        "aosjfblk\n"
+        "alks\n"
+        "lkfn\n"
+        "kajs\n"
+        "nfk\n"
+        "lf");
 
-  ck_assert_int_eq(l, 7);
+  ck_assert_int_eq(l, 8);
+
+  l = count_lines(
+        "a\n"
+        "sdijb\n");
+
+  ck_assert_int_eq(l, 2);
+
+  l = count_lines("a");
+
+  ck_assert_int_eq(l, 1);
 }
 END_TEST
 
 START_TEST (parse_graph_string_test_1) {
   char str[] =
       "1 | 2 3 | 5\n"
-      "2 | 1 3 | 4\n";
+      "2 | 1 3 | 4 6\n";
 
   node_t *nodes;
   int n;
@@ -71,6 +89,59 @@ START_TEST (parse_graph_string_test_1) {
   ck_assert_int_eq(rc, 2);
 
   ck_assert_int_eq(nodes[0].id, 1);
+  ck_assert_int_eq(nodes[0].num_out, 2);
+  ck_assert_int_eq(nodes[0].num_in, 1);
+  ck_assert_int_eq(nodes[0].out[0], 2);
+  ck_assert_int_eq(nodes[0].out[1], 3);
+  ck_assert_int_eq(nodes[0].in[0], 5);
+
+  ck_assert_int_eq(nodes[1].id, 2);
+  ck_assert_int_eq(nodes[1].num_out, 2);
+  ck_assert_int_eq(nodes[1].num_in, 2);
+  ck_assert_int_eq(nodes[1].out[0], 1);
+  ck_assert_int_eq(nodes[1].out[1], 3);
+  ck_assert_int_eq(nodes[1].in[0], 4);
+  ck_assert_int_eq(nodes[1].in[1], 6);
+
+  for (int i=0; i<n; ++i) {
+    node_free(&nodes[i]);
+  }
+  free(nodes);
+}
+END_TEST
+
+START_TEST (parse_graph_string_test_2) {
+  char str[] =
+      "1 | 2 3 | 5\n"
+      "2 | 1 3 | 4 6";
+
+  node_t *nodes;
+  int n;
+
+  int rc = parse_graph_string(str, &nodes, &n);
+
+  ck_assert_int_eq(n, 2);
+  ck_assert_int_eq(rc, 2);
+
+  ck_assert_int_eq(nodes[0].id, 1);
+  ck_assert_int_eq(nodes[0].num_out, 2);
+  ck_assert_int_eq(nodes[0].num_in, 1);
+  ck_assert_int_eq(nodes[0].out[0], 2);
+  ck_assert_int_eq(nodes[0].out[1], 3);
+  ck_assert_int_eq(nodes[0].in[0], 5);
+
+  ck_assert_int_eq(nodes[1].id, 2);
+  ck_assert_int_eq(nodes[1].num_out, 2);
+  ck_assert_int_eq(nodes[1].num_in, 2);
+  ck_assert_int_eq(nodes[1].out[0], 1);
+  ck_assert_int_eq(nodes[1].out[1], 3);
+  ck_assert_int_eq(nodes[1].in[0], 4);
+  ck_assert_int_eq(nodes[1].in[1], 6);
+
+  for (int i=0; i<n; ++i) {
+    node_free(&nodes[i]);
+  }
+  free(nodes);
 }
 END_TEST
 
@@ -82,6 +153,7 @@ Suite * parser_suite () {
   tcase_add_test(tc_core, parse_node_descr_test_1);
   tcase_add_test(tc_core, count_lines_test);
   tcase_add_test(tc_core, parse_graph_string_test_1);
+  tcase_add_test(tc_core, parse_graph_string_test_2);
   suite_add_tcase(s, tc_core);
 
   return s;

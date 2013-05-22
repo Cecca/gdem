@@ -128,10 +128,14 @@ char * read_file (char * filename) {
 
 int count_lines (char *str) {
   int count = 0;
-  for (int i=0; i < strlen(str); ++i) {
+  int len = strlen(str);
+  for (int i=0; i < len; ++i) {
     if (str[i] == '\n') {
       ++count;
     }
+  }
+  if(str[len-1] != '\n') {
+    ++count;
   }
   return count;
 }
@@ -148,18 +152,34 @@ int parse_graph_file (char *filename, node_t **nodes, int *n) {
 int parse_graph_string (char *str, node_t **nodes, int *n) {
   *n = count_lines(str);
   int i = 0;
+  int rc = 0;
 
   *nodes = malloc(*n * sizeof(node_t));
 
   char *line = strtok(str, "\n");
 
+  if (line != NULL) {
+    rc = parse_node_descr_to(line, &((*nodes)[i]));
+    if (rc < 0) {
+      free(*nodes);
+      fprintf(stderr, "Error in parsing node description\n");
+      return -1;
+    }
+    ++i;
+  }
+
   while(line != NULL) {
     line = strtok(NULL, "\n");
     if(line != NULL) {
-      parse_node_descr_to(line, &((*nodes)[i]));
+      rc = parse_node_descr_to(line, &((*nodes)[i]));
+      if (rc < 0) {
+        free(*nodes);
+        fprintf(stderr, "Error in parsing node description\n");
+        return -1;
+      }
       ++i;
     }
   }
 
-  return i+1;
+  return i;
 }
