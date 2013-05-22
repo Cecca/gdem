@@ -111,6 +111,26 @@ START_TEST (parse_node_descr_test_4) {
 }
 END_TEST
 
+START_TEST (parse_node_descr_to_test_1) {
+  char *descr = "2 | |";
+  node_t node;
+
+  int rc = parse_node_descr_to(descr, &node);
+
+  ck_assert_int_eq(node.id, 2);
+  ck_assert_int_eq(rc, 0);
+
+  ck_assert_int_eq(node.num_out, 0);
+  ck_assert(node.out == NULL);
+
+  ck_assert_int_eq(node.num_in, 0);
+  ck_assert(node.in == NULL);
+
+  node_free(&node);
+
+}
+END_TEST
+
 START_TEST (count_lines_test) {
   int l = count_lines(
         "a\n"
@@ -206,6 +226,75 @@ START_TEST (parse_graph_string_test_2) {
 }
 END_TEST
 
+START_TEST (parse_graph_string_test_3) {
+  char str[] =
+      "0 | 1 2 | 3\n"
+      "1 | 2 3 | 4\n"
+      "2 | |\n"
+      "3 | 2 | 4\n"
+      "4 | 5 | 1\n"
+      "5 | |";
+
+  node_t *nodes;
+  int n;
+
+  int rc = parse_graph_string(str, &nodes, &n);
+
+  ck_assert_int_eq(n, 6);
+  ck_assert_int_eq(rc, 6);
+
+  ck_assert_int_eq(nodes[0].id, 0);
+  ck_assert_int_eq(nodes[0].num_out, 2);
+  ck_assert_int_eq(nodes[0].num_in, 1);
+  ck_assert_int_eq(nodes[0].out[0], 1);
+  ck_assert_int_eq(nodes[0].out[1], 2);
+  ck_assert_int_eq(nodes[0].in[0], 3);
+
+  ck_assert_int_eq(nodes[2].id, 2);
+  ck_assert_int_eq(nodes[1].num_out, 0);
+  ck_assert_int_eq(nodes[1].num_in, 0);
+  ck_assert(nodes[1].out == NULL);
+  ck_assert(nodes[1].in == NULL);
+
+  for (int i=0; i<n; ++i) {
+    node_free(&nodes[i]);
+  }
+  free(nodes);
+}
+END_TEST
+
+START_TEST (parse_graph_string_test_4) {
+  char str[] =
+      "2 | |\n"
+      "5 | |";
+
+  node_t *nodes;
+  int n;
+
+  int rc = parse_graph_string(str, &nodes, &n);
+
+  ck_assert_int_eq(n, 2);
+  ck_assert_int_eq(rc, 2);
+
+  ck_assert_int_eq(nodes[0].id, 2);
+  ck_assert_int_eq(nodes[0].num_out, 0);
+  ck_assert_int_eq(nodes[0].num_in, 0);
+  ck_assert(nodes[0].out == NULL);
+  ck_assert(nodes[0].in == NULL);
+
+  ck_assert_int_eq(nodes[1].id, 5);
+  ck_assert_int_eq(nodes[1].num_out, 0);
+  ck_assert_int_eq(nodes[1].num_in, 0);
+  ck_assert(nodes[1].out == NULL);
+  ck_assert(nodes[1].in == NULL);
+
+  for (int i=0; i<n; ++i) {
+    node_free(&nodes[i]);
+  }
+  free(nodes);
+}
+END_TEST
+
 Suite * parser_suite () {
   Suite *s = suite_create("Parser");
   TCase *tc_core = tcase_create("Core");
@@ -215,9 +304,12 @@ Suite * parser_suite () {
   tcase_add_test(tc_core, parse_node_descr_test_2);
   tcase_add_test(tc_core, parse_node_descr_test_3);
   tcase_add_test(tc_core, parse_node_descr_test_4);
+  tcase_add_test(tc_core, parse_node_descr_to_test_1);
   tcase_add_test(tc_core, count_lines_test);
   tcase_add_test(tc_core, parse_graph_string_test_1);
   tcase_add_test(tc_core, parse_graph_string_test_2);
+  tcase_add_test(tc_core, parse_graph_string_test_3);
+  tcase_add_test(tc_core, parse_graph_string_test_4);
   suite_add_tcase(s, tc_core);
 
   return s;

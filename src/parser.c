@@ -20,6 +20,7 @@ int parse_node_descr_to (char *descr, node_t *node) {
       sscanf(descr, "%d |%[0123456789 ]|%[0123456789 ]", &id, out_s, in_s);
 
   if (read != 3) {
+    printf("here: %d\n", read);
     error_message(descr);
     return 1;
   }
@@ -151,6 +152,7 @@ int parse_graph_file (char *filename, node_t **nodes, int *n) {
 }
 
 int parse_graph_string (char *str, node_t **nodes, int *n) {
+  printf("Parsing:\n~~~~~~~~\n%s\n~~~~~~~~\n", str);
   *n = count_lines(str);
   int i = 0;
   int rc = 0;
@@ -167,9 +169,9 @@ int parse_graph_string (char *str, node_t **nodes, int *n) {
 
   if (line != NULL) {
     rc = parse_node_descr_to(line, &((*nodes)[i]));
-    if (rc < 0) {
+    if (rc != 0) {
       free(*nodes);
-      fprintf(stderr, "Error in parsing node description\n");
+      fprintf(stderr, "Error in parsing node description: rc=%d\n", rc);
       return -1;
     }
     ++i;
@@ -179,9 +181,9 @@ int parse_graph_string (char *str, node_t **nodes, int *n) {
     line = strtok(NULL, "\n");
     if(line != NULL) {
       rc = parse_node_descr_to(line, &((*nodes)[i]));
-      if (rc < 0) {
+      if (rc != 0) {
         free(*nodes);
-        fprintf(stderr, "Error in parsing node description\n");
+        fprintf(stderr, "Error in parsing node description: rc=%d\n", rc);
         return -1;
       }
       ++i;
