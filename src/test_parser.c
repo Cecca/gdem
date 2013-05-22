@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include "parser.h"
 #include "graph.h"
+#include "null.h"
 
 START_TEST (count_numbers_test) {
   char *str = "1 2 3 4";
@@ -60,8 +61,10 @@ START_TEST (parse_node_descr_test_2) {
     ck_assert_int_eq(node->id, 1);
 
     ck_assert_int_eq(node->num_out, 0);
+    ck_assert(node->out == NULL);
 
     ck_assert_int_eq(node->num_in, 0);
+    ck_assert(node->in == NULL);
 
     node_delete(node);
   }
@@ -81,6 +84,7 @@ START_TEST (parse_node_descr_test_3) {
     ck_assert_int_eq(node->out[0], 2);
 
     ck_assert_int_eq(node->num_in, 0);
+    ck_assert(node->in == NULL);
 
     node_delete(node);
   }
@@ -97,6 +101,7 @@ START_TEST (parse_node_descr_test_4) {
     ck_assert_int_eq(node->id, 1);
 
     ck_assert_int_eq(node->num_out, 0);
+    ck_assert(node->out == NULL);
 
     ck_assert_int_eq(node->num_in, 1);
     ck_assert_int_eq(node->in[0], 4);
