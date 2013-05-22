@@ -6,7 +6,7 @@ find_package(MPI REQUIRED)
 include_directories(${MPI_C_INCLUDE_PATH})
 
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -lm -g -Wall")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=c99 -lm -g -Wall")
 
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_SOURCE_DIR}/cmake/modules")
 

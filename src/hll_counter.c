@@ -33,7 +33,7 @@ hll_counter_t * hll_cnt_copy(hll_counter_t * counter) {
   return copy;
 }
 
-inline hll_reg_t hll_cnt_rho(hll_hash_t x, unsigned int mask) {
+hll_reg_t hll_cnt_rho(hll_hash_t x, unsigned int mask) {
   if( (x & mask) == 0 ) {
     return sizeof(hll_hash_t)*8;
   }

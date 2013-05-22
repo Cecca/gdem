@@ -185,7 +185,7 @@ hll_counter_t * hll_cnt_copy(hll_counter_t * counter);
  * @param mask the bit mask to hide the first `b` bits of the hash.
  * @return the position of the rightmost 1-bit in the hash, starting from 1.
  */
-inline hll_reg_t hll_cnt_rho(hll_hash_t elem, unsigned int mask);
+hll_reg_t hll_cnt_rho(hll_hash_t elem, unsigned int mask);
 
 /**
  * @brief Add a new element to the counter.
