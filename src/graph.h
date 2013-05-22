@@ -25,6 +25,9 @@ typedef struct _node {
 
 /**
  * @brief Dynamically allocates a new node.
+ *
+ * @see node_init(node_t *, node_id_t, size_t, size_t);
+ *
  * @param id the id of the node
  * @param out_n the cardinality of the forward star of the node
  * @param in_n the cardinality of the reverse star
@@ -50,6 +53,9 @@ void node_delete(node_t * node);
  * node_t node;
  * node_init (&node, 1, 3, 4);
  * ~~~~
+ *
+ * **Attention**: if `out_n` or `in_n` are 0, the corresponding array will be
+ * set to `NULL`.
  *
  * @param node Pointer to the node to initialize
  * @param id the id of the node
