@@ -50,12 +50,20 @@ START_TEST (parse_node_descr_test_1) {
 }
 END_TEST
 
+START_TEST (count_lines_test) {
+  int l = count_lines("a\nsdijb\naosjfblk\nalks\nlkfn\nkajs\nnfk\nlf");
+
+  ck_assert_int_eq(l, 7);
+}
+END_TEST
+
 Suite * parser_suite () {
   Suite *s = suite_create("Parser");
   TCase *tc_core = tcase_create("Core");
   tcase_add_test(tc_core, count_numbers_test);
   tcase_add_test(tc_core, populate_adjacency_test);
   tcase_add_test(tc_core, parse_node_descr_test_1);
+  tcase_add_test(tc_core, count_lines_test);
   suite_add_tcase(s, tc_core);
 
   return s;
