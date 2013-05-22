@@ -97,3 +97,30 @@ int populate_adjacency(char *adj_str, node_id_t *adj, int n) {
 
   return i;
 }
+
+/*
+ * Reads an entire file into a dinamically allocated buffer.
+ */
+char * read_file (char * filename) {
+  FILE *f = fopen("text.txt", "rb");
+  fseek(f, 0, SEEK_END);
+  long pos = ftell(f);
+  fseek(f, 0, SEEK_SET);
+
+  char *bytes = malloc(pos);
+  if (bytes == NULL) {
+    fprintf(stderr, "ERROR: Not enough memory to load file %s in memory\n",
+            filename);
+  }
+  fread(bytes, pos, 1, f);
+  fclose(f);
+
+  return bytes;
+}
+
+int parse_graph_file (char *filename, node_t **nodes, int *n) {
+  char * file_contents = read_file(filename);
+
+  free(file_contents);
+  return -1;
+}
