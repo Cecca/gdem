@@ -110,7 +110,7 @@ int populate_adjacency(char *adj_str, node_id_t *adj, int n) {
  * Reads an entire file into a dinamically allocated buffer.
  */
 char * read_file (char * filename) {
-  FILE *f = fopen("text.txt", "rb");
+  FILE *f = fopen(filename, "rb");
   fseek(f, 0, SEEK_END);
   long pos = ftell(f);
   fseek(f, 0, SEEK_SET);
