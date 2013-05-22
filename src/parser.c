@@ -154,7 +154,13 @@ int parse_graph_string (char *str, node_t **nodes, int *n) {
   int i = 0;
   int rc = 0;
 
-  *nodes = malloc(*n * sizeof(node_t));
+  if (*n != 0) {
+    *nodes = malloc(*n * sizeof(node_t));
+  } else {
+    fprintf(stderr, "%s:%d: ERROR: trying to allocate 0 bytes.\n",
+            __FILE__, __LINE__);
+    return -1;
+  }
 
   char *line = strtok(str, "\n");
 
