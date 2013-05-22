@@ -156,7 +156,7 @@ int parse_graph_string (char *str, node_t **nodes, int *n) {
   while(line != NULL) {
     line = strtok(NULL, "\n");
     if(line != NULL) {
-
+      parse_node_descr_to(line, &((*nodes)[num_parsed]));
     }
   }
 
