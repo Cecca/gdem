@@ -138,5 +138,19 @@ int parse_graph_file (char *filename, node_t **nodes, int *n) {
 }
 
 int parse_graph_string (char *str, node_t **nodes, int *n) {
-  return -1;
+  *n = count_lines(str);
+  int num_parsed = 0;
+
+  *nodes = malloc(*n * sizeof(node_t));
+
+  char *line = strtok(str, "\n");
+
+  while(line != NULL) {
+    line = strtok(NULL, "\n");
+    if(line != NULL) {
+
+    }
+  }
+
+  return num_parsed;
 }
