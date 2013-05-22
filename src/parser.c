@@ -12,13 +12,14 @@ void error_message(char* descr) {
 #define MAX_ADJ_LEN 1000
 
 int parse_node_descr_to (char *descr, node_t *node) {
+  printf("Descr: < %s >\n", descr);
   int id;
   char out_s[MAX_ADJ_LEN], in_s[MAX_ADJ_LEN];
 
   int read =
-      sscanf(descr, "%d | %[0123456789 ] | %[0123456789 ]", &id, out_s, in_s);
+      sscanf(descr, "%d |%[0123456789 ]|%[0123456789 ]", &id, out_s, in_s);
 
-  if(read != 3) {
+  if (read != 3) {
     error_message(descr);
     return 1;
   }

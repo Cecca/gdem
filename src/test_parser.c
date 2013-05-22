@@ -50,6 +50,62 @@ START_TEST (parse_node_descr_test_1) {
 }
 END_TEST
 
+START_TEST (parse_node_descr_test_2) {
+  char *descr = "1 | | ";
+  node_t *node = parse_node_descr(descr);
+
+  ck_assert (node != NULL);
+
+  if (node != NULL) {
+    ck_assert_int_eq(node->id, 1);
+
+    ck_assert_int_eq(node->num_out, 0);
+
+    ck_assert_int_eq(node->num_in, 0);
+
+    node_delete(node);
+  }
+}
+END_TEST
+
+START_TEST (parse_node_descr_test_3) {
+  char *descr = "1 | 2 | ";
+  node_t *node = parse_node_descr(descr);
+
+  ck_assert (node != NULL);
+
+  if (node != NULL) {
+    ck_assert_int_eq(node->id, 1);
+
+    ck_assert_int_eq(node->num_out, 1);
+    ck_assert_int_eq(node->out[0], 2);
+
+    ck_assert_int_eq(node->num_in, 0);
+
+    node_delete(node);
+  }
+}
+END_TEST
+
+START_TEST (parse_node_descr_test_4) {
+  char *descr = "1 | | 4 ";
+  node_t *node = parse_node_descr(descr);
+
+  ck_assert (node != NULL);
+
+  if (node != NULL) {
+    ck_assert_int_eq(node->id, 1);
+
+    ck_assert_int_eq(node->num_out, 0);
+
+    ck_assert_int_eq(node->num_in, 1);
+    ck_assert_int_eq(node->in[0], 4);
+
+    node_delete(node);
+  }
+}
+END_TEST
+
 START_TEST (count_lines_test) {
   int l = count_lines(
         "a\n"
@@ -151,6 +207,9 @@ Suite * parser_suite () {
   tcase_add_test(tc_core, count_numbers_test);
   tcase_add_test(tc_core, populate_adjacency_test);
   tcase_add_test(tc_core, parse_node_descr_test_1);
+  tcase_add_test(tc_core, parse_node_descr_test_2);
+  tcase_add_test(tc_core, parse_node_descr_test_3);
+  tcase_add_test(tc_core, parse_node_descr_test_4);
   tcase_add_test(tc_core, count_lines_test);
   tcase_add_test(tc_core, parse_graph_string_test_1);
   tcase_add_test(tc_core, parse_graph_string_test_2);
