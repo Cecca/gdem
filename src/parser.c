@@ -118,6 +118,16 @@ char * read_file (char * filename) {
   return bytes;
 }
 
+int count_lines (char *str) {
+  int count = 0;
+  for (int i=0; i < strlen(str); ++i) {
+    if (str[i] == '\n') {
+      ++count;
+    }
+  }
+  return count;
+}
+
 int parse_graph_file (char *filename, node_t **nodes, int *n) {
   char * file_contents = read_file(filename);
 

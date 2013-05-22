@@ -87,6 +87,11 @@ int parse_graph_file(char *filename, node_t **nodes, int *n);
 int count_numbers(char * str);
 
 /*
+ * Reads the number of lines in the given string.
+ */
+int count_lines(char * str);
+
+/*
  * Populates the `adj` array with `n` integers extracted from the string
  * `adj_str`.
  * Returns -1 on error, the number of inserted elements otherwise
