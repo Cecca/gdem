@@ -131,6 +131,12 @@ int count_lines (char *str) {
 int parse_graph_file (char *filename, node_t **nodes, int *n) {
   char * file_contents = read_file(filename);
 
+  int num_parsed = parse_graph_string(file_contents, nodes, n);
+
   free(file_contents);
+  return num_parsed;
+}
+
+int parse_graph_string (char *str, node_t **nodes, int *n) {
   return -1;
 }
