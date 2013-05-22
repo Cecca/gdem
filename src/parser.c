@@ -11,7 +11,48 @@ void error_message(char* descr) {
 
 #define MAX_ADJ_LEN 1000
 
-node_t * parse_node_descr(char *descr) {
+int parse_node_descr_to (char *descr, node_t *node) {
+  int id;
+  char out_s[MAX_ADJ_LEN], in_s[MAX_ADJ_LEN];
+
+  int read =
+      sscanf(descr, "%d | %[0123456789 ] | %[0123456789 ]", &id, out_s, in_s);
+
+  if(read != 3) {
+    error_message(descr);
+    return 1;
+  }
+
+  int n_out = count_numbers(out_s);
+  int n_in = count_numbers(in_s);
+
+  if (n_in < 0 || n_out < 0) {
+    error_message(descr);
+    return 1;
+  }
+
+  node_init(node, id, n_out, n_in);
+
+  int inserted = -1;
+
+  inserted = populate_adjacency(out_s, node->out, n_out);
+  if (inserted != n_out) {
+    error_message(descr);
+    node_free(node);
+    return 1;
+  }
+
+  inserted = populate_adjacency(in_s, node->in, n_in);
+  if (inserted != n_in) {
+    error_message(descr);
+    node_free(node);
+    return 1;
+  }
+
+  return 0;
+}
+
+node_t * parse_node_descr (char *descr) {
   int id;
   char out_s[MAX_ADJ_LEN], in_s[MAX_ADJ_LEN];
 

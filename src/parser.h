@@ -51,6 +51,20 @@
 node_t * parse_node_descr(char * descr);
 
 /**
+ * @brief Parses a node description populating the given node.
+ *
+ * This is the same of parse_node_descr(char *), but instead of initializing
+ * a node_t on the heap, populates an already existing one.s
+ *
+ * @see parse_node_descr(char *)
+ *
+ * @param descr the description to parse
+ * @param node the node to populate
+ * @return 0 on success, 1 otherwise
+ */
+int parse_node_descr_to(char * descr, node_t * node);
+
+/**
  * @brief Loads an array of node_t structs from the given file.
  *
  * The array that will hold the nodes will be dinamically allocated by the
