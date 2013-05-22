@@ -1,5 +1,5 @@
-gdem
-====
+gdem [![Build Status](https://travis-ci.org/Cecca/gdem.png)](https://travis-ci.org/Cecca/gdem)
+==============================================================================================
 
 Graph Diameter Estimator on MPI
 
