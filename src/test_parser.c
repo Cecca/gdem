@@ -57,6 +57,23 @@ START_TEST (count_lines_test) {
 }
 END_TEST
 
+START_TEST (parse_graph_string_test_1) {
+  char str[] =
+      "1 | 2 3 | 5\n"
+      "2 | 1 3 | 4\n";
+
+  node_t *nodes;
+  int n;
+
+  int rc = parse_graph_string(str, &nodes, &n);
+
+  ck_assert_int_eq(n, 2);
+  ck_assert_int_eq(rc, 2);
+
+  ck_assert_int_eq(nodes[0].id, 1);
+}
+END_TEST
+
 Suite * parser_suite () {
   Suite *s = suite_create("Parser");
   TCase *tc_core = tcase_create("Core");
@@ -64,6 +81,7 @@ Suite * parser_suite () {
   tcase_add_test(tc_core, populate_adjacency_test);
   tcase_add_test(tc_core, parse_node_descr_test_1);
   tcase_add_test(tc_core, count_lines_test);
+  tcase_add_test(tc_core, parse_graph_string_test_1);
   suite_add_tcase(s, tc_core);
 
   return s;
