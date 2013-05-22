@@ -76,4 +76,18 @@ in this case
 
     scan-view /tmp/scan-build-2013-05-22-1
 
+How to configure Eclipse
+------------------------
 
+To generate project files for the Eclipse IDE, run the following from 
+the project root directory
+
+    cd ..
+    mkdir gdem_eclipse
+    cd gdem_eclipse
+    cmake -G "Eclipse CDT4 - Unix Makefiles" ../gdem
+
+Then you can import the project into Eclipse from the directory
+`gdem_eclipse`. Please note that due to the way Eclipse works (at least
+Eclipse Indigo) the Eclipse directory _must_ be a sibiling of the project's
+root directory in order to perform out of source builds (that is highly desirable).
