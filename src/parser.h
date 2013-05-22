@@ -50,6 +50,36 @@
  */
 node_t * parse_node_descr(char * descr);
 
+/**
+ * @brief Loads an array of node_t structs from the given file.
+ *
+ * The array that will hold the nodes will be dinamically allocated by the
+ * function itself;
+ *
+ * Example usage
+ *
+ * ~~~~~{.c}
+ * int n;
+ * node_t *nodes;
+ *
+ * int rc = parse_graph_file("graph.dat", &nodes, &n);
+ *
+ * if (rc < 0) {
+ *   // ERROR!
+ * } else {
+ *   // Everything ok, you can use the nodes array that has been
+ *   // correctly allocated
+ * }
+ * ~~~~~
+ *
+ * @param filename the name of the file containing the nodes
+ * @param nodes the (uninitialized) array of node_t that will hold the
+ *              loaded nodes
+ * @param n pointer to the int that will hold the size of the array.
+ * @return the number of parsed nodes on success, -1 otherwise
+ */
+int parse_graph_file(char *filename, node_t **nodes, int *n);
+
 /*
  * Given a string, counts the number of distinct numbers in it.
  * Returns `-1` on error
