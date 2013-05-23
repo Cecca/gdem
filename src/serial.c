@@ -48,9 +48,13 @@ int main(int argc, char **argv) {
         if (!hll_cnt_equals(&counters[i], &counters_prev[j])) {
           ++changed;
         }
+        hll_cnt_copy_to(&counters[i], &counters_prev[i]);
       }
     }
+    ++k;
   }
+
+  printf("Number of iterations: %d\n", k);
 
   // free resources
   for(int i=0; i<n; ++i) {
