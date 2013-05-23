@@ -251,10 +251,10 @@ START_TEST (parse_graph_string_test_3) {
   ck_assert_int_eq(nodes[0].in[0], 3);
 
   ck_assert_int_eq(nodes[2].id, 2);
-  ck_assert_int_eq(nodes[1].num_out, 0);
-  ck_assert_int_eq(nodes[1].num_in, 0);
-  ck_assert(nodes[1].out == NULL);
-  ck_assert(nodes[1].in == NULL);
+  ck_assert_int_eq(nodes[2].num_out, 0);
+  ck_assert_int_eq(nodes[2].num_in, 0);
+  ck_assert(nodes[2].out == NULL);
+  ck_assert(nodes[2].in == NULL);
 
   for (int i=0; i<n; ++i) {
     node_free(&nodes[i]);

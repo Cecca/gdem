@@ -16,8 +16,22 @@ int parse_node_descr_to (char *descr, node_t *node) {
   int id;
   char out_s[MAX_ADJ_LEN], in_s[MAX_ADJ_LEN];
 
-  int read =
-      sscanf(descr, "%d |%[0123456789 ]|%[0123456789 ]", &id, out_s, in_s);
+  int read;
+
+  // FIXME: This is kind of a hack to make the scanf format string
+  // work every time. See if we can get rid of it.
+  int len = strlen(descr);
+  if(descr[len-1] != ' ') {
+    char str[len+1];
+    strcpy(str, descr);
+    str[len] = ' ';
+    str[len+1] = '\0';
+    read =
+        sscanf(str, "%d |%[0123456789 ]|%[0123456789 ]", &id, out_s, in_s);
+  } else {
+    read =
+        sscanf(descr, "%d |%[0123456789 ]|%[0123456789 ]", &id, out_s, in_s);
+  }
 
   if (read != 3) {
     printf("here: %d\n", read);
