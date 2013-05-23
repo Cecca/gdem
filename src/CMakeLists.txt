@@ -1,5 +1,7 @@
 add_executable ( serial
       hll_counter.c
+      parser.c
+      graph.c
       serial.c
 )
 
