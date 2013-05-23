@@ -37,8 +37,13 @@ hll_counter_t * hll_cnt_copy(hll_counter_t * counter) {
   hll_counter_t *copy = malloc(sizeof(hll_counter_t));
   memcpy(copy, counter, sizeof(hll_counter_t));
   copy->registers = malloc(counter->m*sizeof(hll_reg_t));
-  memcpy(copy->registers, counter->registers, counter->m*sizeof(hll_reg_t));
+  hll_cnt_copy_to(counter, copy);
   return copy;
+}
+
+void hll_cnt_copy_to (hll_counter_t *from, hll_counter_t *to) {
+  assert(from->b == to->b);
+  memcpy(to->registers, from->registers, from->m*sizeof(hll_reg_t));
 }
 
 hll_reg_t hll_cnt_rho(hll_hash_t x, unsigned int mask) {

@@ -172,6 +172,16 @@ void hll_cnt_delete(hll_counter_t * counter);
 hll_counter_t * hll_cnt_copy(hll_counter_t * counter);
 
 /**
+ * @brief Copies the values of the registers of from in the registers of to
+ *
+ * **Attention**: the `to` counter _must_ be already initialized.
+ *
+ * @param from the original counter
+ * @param to the counter we are copying to
+ */
+void hll_cnt_copy_to(hll_counter_t * from, hll_counter_t * to);
+
+/**
  * @brief Initializes an already allocated counter.
  * @param counter the counter to initialize
  * @param bits the number of bits to index the registers

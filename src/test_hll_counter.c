@@ -189,6 +189,23 @@ START_TEST (hll_copy_2) {
 }
 END_TEST
 
+START_TEST (hll_copy_to_1) {
+  hll_counter_t c1, c2;
+
+  hll_cnt_init(&c1, 2);
+  hll_cnt_init(&c2, 2);
+
+  hll_cnt_add(321, &c1);
+
+  hll_cnt_copy_to(&c1, &c2);
+
+  ck_assert(hll_cnt_equals(&c1,&c2));
+
+  hll_cnt_free(&c1);
+  hll_cnt_free(&c2);
+}
+END_TEST
+
 START_TEST (hll_union_i) {
   hll_counter_t *first, *second;
 
@@ -244,6 +261,7 @@ Suite * hll_counter_suite () {
   tcase_add_test(tc_core, hll_union_i);
   tcase_add_test(tc_core, hll_copy_1);
   tcase_add_test(tc_core, hll_copy_2);
+  tcase_add_test(tc_core, hll_copy_to_1);
   tcase_add_test(tc_core, hll_counter_rho_test);
   tcase_add_test(tc_core, hll_insertion);
   tcase_add_test(tc_core, hll_insertion_2);
