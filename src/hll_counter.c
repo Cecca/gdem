@@ -37,7 +37,7 @@ hll_counter_t * hll_cnt_copy(hll_counter_t * counter) {
   hll_counter_t *copy = malloc(sizeof(hll_counter_t));
   memcpy(copy, counter, sizeof(hll_counter_t));
   copy->registers = malloc(counter->m*sizeof(hll_reg_t));
-  memcpy(copy->registers, counter->registers, counter->m*sizeof(hll_reg_t));
+  hll_cnt_copy_to(counter, copy);
   return copy;
 }
 
