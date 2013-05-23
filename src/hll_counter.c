@@ -1,27 +1,35 @@
 #include "hll_counter.h"
 #include <assert.h>
 
-hll_counter_t * hll_cnt_new(size_t bits) {
+void hll_cnt_init (hll_counter_t *counter, size_t bits) {
   assert( bits < sizeof(hll_hash_t)*8
          && "You cannot use more bits than there are in the hash value");
-  hll_counter_t *c = malloc(sizeof(hll_counter_t));
-  c->b = bits;
-  c->m = 1 << bits; // 2^bits
+  counter->b = bits;
+  counter->m = 1 << bits; // 2^bits
   if (bits != 0) {
-    c->mask = ~(~0 << (sizeof(hll_hash_t)*8 - bits));
+    counter->mask = ~(~0 << (sizeof(hll_hash_t)*8 - bits));
   } else {
-    c->mask = ~0;
+    counter->mask = ~0;
   }
 
-  size_t mem = c->m*sizeof(hll_reg_t);
+  size_t mem = counter->m*sizeof(hll_reg_t);
 
-  c->registers = (hll_reg_t*) malloc(mem);
-  memset(c->registers, 0, mem);
+  counter->registers = (hll_reg_t*) malloc(mem);
+  memset(counter->registers, 0, mem);
+}
+
+void hll_cnt_free (hll_counter_t * counter) {
+  free(counter->registers);
+}
+
+hll_counter_t * hll_cnt_new(size_t bits) {
+  hll_counter_t *c = malloc(sizeof(hll_counter_t));
+  hll_cnt_init(c, bits);
   return c;
 }
 
 void hll_cnt_delete(hll_counter_t * counter) {
-  free(counter->registers);
+  hll_cnt_free(counter);
   free(counter);
 }
 
