@@ -10,6 +10,11 @@
 
 int main(int argc, char **argv) {
 
+  if (argc != 2) {
+    fprintf(stderr, "Please provide a graph file name\n");
+    exit(EXIT_FAILURE);
+  }
+
   int n = 0;
   node_t *nodes;
   hll_counter_t *counters;
@@ -18,7 +23,7 @@ int main(int argc, char **argv) {
 
   neighbourhood_function = malloc(sizeof(hll_cardinality_t) * MAX_ITER);
 
-  int rc = parse_graph_file("graph.dat", &nodes, &n);
+  int rc = parse_graph_file(argv[1], &nodes, &n);
   if (rc < 0) {
     fprintf(stderr, "ERROR: could not parse graph file correctly.\n");
     exit(EXIT_FAILURE);
