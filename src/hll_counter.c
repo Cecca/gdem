@@ -41,6 +41,11 @@ hll_counter_t * hll_cnt_copy(hll_counter_t * counter) {
   return copy;
 }
 
+void hll_cnt_copy_to (hll_counter_t *from, hll_counter_t *to) {
+  assert(from->b == to->b);
+  memcpy(to->registers, from->registers, from->m*sizeof(hll_reg_t));
+}
+
 hll_reg_t hll_cnt_rho(hll_hash_t x, unsigned int mask) {
   if( (x & mask) == 0 ) {
     return sizeof(hll_hash_t)*8;
