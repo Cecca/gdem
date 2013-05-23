@@ -14,6 +14,9 @@ int main(int argc, char **argv) {
   node_t *nodes;
   hll_counter_t *counters;
   hll_counter_t *counters_prev;
+  hll_cardinality_t *neighbourhood_function;
+
+  neighbourhood_function = malloc(sizeof(hll_cardinality_t) * MAX_ITER);
 
   int rc = parse_graph_file("graph.dat", &nodes, &n);
   if (rc < 0) {
@@ -42,19 +45,29 @@ int main(int argc, char **argv) {
 
   while (changed != 0 && k < MAX_ITER) {
     changed = 0;
-    for (int i=0; i<n; ++i) {
-      for (int j=0; j<nodes[i].num_out; ++j) {
-        hll_cnt_union_i(&counters[i], &counters[j]);
+    for (int i=0; i<n; ++i) { // for each counter
+      for (int j=0; j<nodes[i].num_out; ++j) { // update it
+        hll_cnt_union_i(&counters[i], &counters_prev[j]);
         if (!hll_cnt_equals(&counters[i], &counters_prev[j])) {
           ++changed;
         }
         hll_cnt_copy_to(&counters[i], &counters_prev[i]);
       }
     }
+    // and now update N(k)
+    hll_cardinality_t sum = 0;
+    for (int h; h<n; ++h) {
+      sum += hll_cnt_size(&counters[h]);
+    }
+    neighbourhood_function[k] = sum;
     ++k;
   }
 
   printf("Number of iterations: %d\n", k);
+  printf("Neighbourhood function is:\n");
+  for (int i=0; i<k; ++i) {
+    printf("    N(%d) = %d\n", i, neighbourhood_function[i]);
+  }
 
   // free resources
   for(int i=0; i<n; ++i) {
@@ -65,6 +78,7 @@ int main(int argc, char **argv) {
   free(nodes);
   free(counters);
   free(counters_prev);
+  free(neighbourhood_function);
 
   return 0;
 }
