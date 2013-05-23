@@ -181,7 +181,7 @@ void hll_cnt_init(hll_counter_t * counter, size_t bits);
 /**
  * @brief Deallocates the memory of the registers of the counter.
  */
-void hll_cnt_free(hll_counter_t *);
+void hll_cnt_free(hll_counter_t * counter);
 
 // ----------------------------------------------------------------------------
 //   Counter operations
