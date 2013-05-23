@@ -56,7 +56,7 @@ int main(int argc, char **argv) {
     }
     // and now update N(k)
     hll_cardinality_t sum = 0;
-    for (int h; h<n; ++h) {
+    for (int h=0; h<n; ++h) {
       sum += hll_cnt_size(&counters[h]);
     }
     neighbourhood_function[k] = sum;
