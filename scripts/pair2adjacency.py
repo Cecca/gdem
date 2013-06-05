@@ -21,11 +21,19 @@ def add_edge(u, v, directed = False):
         adjacencies[u][0].append(v)
     else:
         adjacencies[u] = ([v],[])
+    if v in adjacencies:
+        adjacencies[v][1].append(u)
+    else:
+        adjacencies[v] = ([],[u])
     if not directed:
         if v in adjacencies:
-            adjacencies[v][1].append(u)
+            adjacencies[v][0].append(u)
         else:
-            adjacencies[v] = ([],[u])
+            adjacencies[v] = ([u],[])
+        if u in adjacencies:
+            adjacencies[u][1].append(v)
+        else:
+            adjacencies[u] = ([],[u])
   
 
 def convert(directed = False):
