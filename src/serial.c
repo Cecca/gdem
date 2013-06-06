@@ -56,20 +56,22 @@ int main(int argc, char **argv) {
     printf("Iteration %d\n", k);
     for (int i=0; i<n; ++i) { // for each counter
       printf("  Counter %d\n", i);
+      hll_counter_t *current_node_counter = & (counters[i]);
       for (int j=0; j<nodes[i].num_out; ++j) { // update it
-        node_id_t neighbour = nodes[i].out[i];
+        node_id_t neighbour = nodes[i].out[j];
         printf("    Neighbour %d: %d\n", j, neighbour);
-        hll_cnt_union_i(&counters[i], &counters_prev[neighbour]);
-        if (!hll_cnt_equals(&counters[i], &counters_prev[neighbour])) {
+        hll_counter_t *neighbour_counter = & (counters_prev[neighbour]);
+        hll_cnt_union_i(current_node_counter, neighbour_counter);
+        if (!hll_cnt_equals(current_node_counter, neighbour_counter)) {
           ++changed;
         }
-        hll_cnt_copy_to(&counters[i], &counters_prev[neighbour]);
+        hll_cnt_copy_to(current_node_counter, neighbour_counter);
       }
     }
     // and now update N(k)
     hll_cardinality_t sum = 0;
     for (int h=0; h<n; ++h) {
-      sum += hll_cnt_size(&counters[h]);
+      sum += hll_cnt_size(& (counters[h]));
     }
     neighbourhood_function[k] = sum;
     ++k;
