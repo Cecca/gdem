@@ -1,12 +1,13 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <errno.h>
+#include <assert.h>
 #include "hll_counter.h"
 #include "parser.h"
+#include "null.h"
 
 #define COUNTER_BITS 2
 #define MAX_ITER 10
-
 
 int main(int argc, char **argv) {
 
@@ -41,6 +42,8 @@ int main(int argc, char **argv) {
     hll_cnt_init(&counters[i], COUNTER_BITS);
     hll_cnt_init(&counters_prev[i], COUNTER_BITS);
     hll_cnt_add(nodes[i].id, &counters[i]);
+    assert(counters[i].registers != NULL);
+    assert(counters_prev[i].registers != NULL);
   }
 
   // the number of nodes that changed since last iteration
@@ -50,13 +53,17 @@ int main(int argc, char **argv) {
 
   while (changed != 0 && k < MAX_ITER) {
     changed = 0;
+    printf("Iteration %d\n", k);
     for (int i=0; i<n; ++i) { // for each counter
+      printf("  Counter %d\n", i);
       for (int j=0; j<nodes[i].num_out; ++j) { // update it
-        hll_cnt_union_i(&counters[i], &counters_prev[j]);
-        if (!hll_cnt_equals(&counters[i], &counters_prev[j])) {
+        node_id_t neighbour = nodes[i].out[i];
+        printf("    Neighbour %d: %d\n", j, neighbour);
+        hll_cnt_union_i(&counters[i], &counters_prev[neighbour]);
+        if (!hll_cnt_equals(&counters[i], &counters_prev[neighbour])) {
           ++changed;
         }
-        hll_cnt_copy_to(&counters[i], &counters_prev[i]);
+        hll_cnt_copy_to(&counters[i], &counters_prev[neighbour]);
       }
     }
     // and now update N(k)
