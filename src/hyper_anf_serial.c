@@ -78,5 +78,14 @@ int effective_diameter ( node_t *graph,
     ++iteration;
   }
 
-  return -1;
+  // Free resources
+  for (int i=0; i<n; ++i) {
+    hll_cnt_free(&counters[i]);
+    hll_cnt_free(&counters_prev[i]);
+  }
+  free(counters);
+  free(counters_prev);
+  free(neighbourhood_function);
+
+  return iteration-1;
 }

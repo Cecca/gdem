@@ -7,9 +7,10 @@
 #include "null.h"
 #include "debug.h"
 #include "check_ptr.h"
+#include "hyper_anf_serial.h"
 
-#define COUNTER_BITS 7
-#define MAX_ITER 10
+#define COUNTER_BITS 3
+#define MAX_ITER 150
 
 int main(int argc, char **argv) {
 
@@ -20,12 +21,6 @@ int main(int argc, char **argv) {
 
   int n = 0;
   node_t *nodes;
-  hll_counter_t *counters;
-  hll_counter_t *counters_prev;
-  hll_cardinality_t *neighbourhood_function;
-
-  neighbourhood_function = malloc(sizeof(hll_cardinality_t) * MAX_ITER);
-  check_ptr(neighbourhood_function);
 
   int rc = parse_graph_file(argv[1], &nodes, &n);
   if (rc < 0) {
@@ -38,69 +33,15 @@ int main(int argc, char **argv) {
 
   printf("Loaded graph with %d nodes\n", n);
 
-  counters = malloc(n * sizeof(hll_counter_t));
-  check_ptr(counters);
-  counters_prev = malloc(n * sizeof(hll_counter_t));
-  check_ptr(counters_prev)
+  int diameter = effective_diameter(nodes, n, 0, COUNTER_BITS, MAX_ITER);
 
-  for (int i=0; i<n; ++i) {
-    hll_cnt_init(& (counters[i]), COUNTER_BITS);
-    hll_cnt_init(& (counters_prev[i]), COUNTER_BITS);
-    hll_cnt_add(nodes[i].id, & (counters[i]));
-
-    assert(counters[i].registers != NULL);
-    assert(counters_prev[i].registers != NULL);
-  }
-
-  // the number of nodes that changed since last iteration
-  int changed = n;
-
-  int k = 0; // iteration number
-
-  while (changed != 0 && k < MAX_ITER) {
-    // first of all update N(k)
-    hll_cardinality_t sum = 0;
-    for (int h=0; h<n; ++h) {
-      sum += hll_cnt_size(& (counters[h]));
-    }
-    neighbourhood_function[k] = sum;
-
-    changed = 0;
-    printd("Iteration %d\n", k);
-    for (int i=0; i<n; ++i) { // for each counter
-      printd("  Counter %d\n", i);
-      hll_counter_t *current_node_counter = & (counters[i]);
-      hll_counter_t *current_node_counter_prev = & (counters_prev[i]);
-      for (int j=0; j<nodes[i].num_out; ++j) { // update it
-        node_id_t neighbour = nodes[i].out[j];
-        printd("    Neighbour %d: %d\n", j, neighbour);
-        hll_counter_t *neighbour_counter = & (counters_prev[neighbour]);
-        hll_cnt_union_i(current_node_counter, neighbour_counter);
-      }
-      if (!hll_cnt_equals(current_node_counter, current_node_counter_prev)) {
-        ++changed;
-      }
-      hll_cnt_copy_to(current_node_counter, current_node_counter_prev);
-    }
-    ++k;
-  }
-
-  printf("Number of iterations: %d\n", k);
-  printf("Neighbourhood function is:\n");
-  for (int i=0; i<k; ++i) {
-    printf("    N(%d) = %d\n", i, neighbourhood_function[i]);
-  }
+  printf("Diameter is %d\n", diameter);
 
   // free resources
   for(int i=0; i<n; ++i) {
     node_free(&nodes[i]);
-    hll_cnt_free(&counters[i]);
-    hll_cnt_free(&counters_prev[i]);
   }
   free(nodes);
-  free(counters);
-  free(counters_prev);
-  free(neighbourhood_function);
 
   return 0;
 }
