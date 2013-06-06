@@ -5,6 +5,7 @@
 #include "hll_counter.h"
 #include "parser.h"
 #include "null.h"
+#include "debug.h"
 
 #define COUNTER_BITS 2
 #define MAX_ITER 10
@@ -53,13 +54,13 @@ int main(int argc, char **argv) {
 
   while (changed != 0 && k < MAX_ITER) {
     changed = 0;
-    printf("Iteration %d\n", k);
+    printd("Iteration %d\n", k);
     for (int i=0; i<n; ++i) { // for each counter
-      printf("  Counter %d\n", i);
+      printd("  Counter %d\n", i);
       hll_counter_t *current_node_counter = & (counters[i]);
       for (int j=0; j<nodes[i].num_out; ++j) { // update it
         node_id_t neighbour = nodes[i].out[j];
-        printf("    Neighbour %d: %d\n", j, neighbour);
+        printd("    Neighbour %d: %d\n", j, neighbour);
         hll_counter_t *neighbour_counter = & (counters_prev[neighbour]);
         hll_cnt_union_i(current_node_counter, neighbour_counter);
         if (!hll_cnt_equals(current_node_counter, neighbour_counter)) {
