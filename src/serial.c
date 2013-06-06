@@ -58,15 +58,16 @@ int main(int argc, char **argv) {
     for (int i=0; i<n; ++i) { // for each counter
       printd("  Counter %d\n", i);
       hll_counter_t *current_node_counter = & (counters[i]);
+      hll_counter_t *current_node_counter_prev = & (counters_prev[i]);
       for (int j=0; j<nodes[i].num_out; ++j) { // update it
         node_id_t neighbour = nodes[i].out[j];
         printd("    Neighbour %d: %d\n", j, neighbour);
         hll_counter_t *neighbour_counter = & (counters_prev[neighbour]);
         hll_cnt_union_i(current_node_counter, neighbour_counter);
-        if (!hll_cnt_equals(current_node_counter, neighbour_counter)) {
+        if (!hll_cnt_equals(current_node_counter, current_node_counter_prev)) {
           ++changed;
         }
-        hll_cnt_copy_to(current_node_counter, neighbour_counter);
+        hll_cnt_copy_to(current_node_counter, current_node_counter_prev);
       }
     }
     // and now update N(k)
