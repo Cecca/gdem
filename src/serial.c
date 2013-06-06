@@ -7,7 +7,7 @@
 #include "null.h"
 #include "debug.h"
 
-#define COUNTER_BITS 2
+#define COUNTER_BITS 10
 #define MAX_ITER 10
 
 int main(int argc, char **argv) {
@@ -40,9 +40,10 @@ int main(int argc, char **argv) {
   counters_prev = malloc(n * sizeof(hll_counter_t));
 
   for (int i=0; i<n; ++i) {
-    hll_cnt_init(&counters[i], COUNTER_BITS);
-    hll_cnt_init(&counters_prev[i], COUNTER_BITS);
-    hll_cnt_add(nodes[i].id, &counters[i]);
+    hll_cnt_init(& (counters[i]), COUNTER_BITS);
+    hll_cnt_init(& (counters_prev[i]), COUNTER_BITS);
+    hll_cnt_add(nodes[i].id, & (counters[i]));
+
     assert(counters[i].registers != NULL);
     assert(counters_prev[i].registers != NULL);
   }
@@ -53,6 +54,13 @@ int main(int argc, char **argv) {
   int k = 0; // iteration number
 
   while (changed != 0 && k < MAX_ITER) {
+    // first of all update N(k)
+    hll_cardinality_t sum = 0;
+    for (int h=0; h<n; ++h) {
+      sum += hll_cnt_size(& (counters[h]));
+    }
+    neighbourhood_function[k] = sum;
+
     changed = 0;
     printd("Iteration %d\n", k);
     for (int i=0; i<n; ++i) { // for each counter
@@ -64,18 +72,12 @@ int main(int argc, char **argv) {
         printd("    Neighbour %d: %d\n", j, neighbour);
         hll_counter_t *neighbour_counter = & (counters_prev[neighbour]);
         hll_cnt_union_i(current_node_counter, neighbour_counter);
-        if (!hll_cnt_equals(current_node_counter, current_node_counter_prev)) {
-          ++changed;
-        }
-        hll_cnt_copy_to(current_node_counter, current_node_counter_prev);
       }
+      if (!hll_cnt_equals(current_node_counter, current_node_counter_prev)) {
+        ++changed;
+      }
+      hll_cnt_copy_to(current_node_counter, current_node_counter_prev);
     }
-    // and now update N(k)
-    hll_cardinality_t sum = 0;
-    for (int h=0; h<n; ++h) {
-      sum += hll_cnt_size(& (counters[h]));
-    }
-    neighbourhood_function[k] = sum;
     ++k;
   }
 
