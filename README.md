@@ -33,7 +33,7 @@ The generated documentation will be available in `doc/html`
 The documentation of the script `scripts/pair2adjacency.py` is available 
 [here](http://www.dei.unipd.it/~ceccarel/gdem-docs/pair2adjacency.html).
 
-Use of `scan-build` do detect potential bugs
+Use of `scan-build` to detect potential bugs
 --------------------------------------------
 
 The `clang` static analizer can be used to detect potential bugs
