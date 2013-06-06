@@ -2,6 +2,7 @@ add_executable ( serial
       hll_counter.c
       parser.c
       graph.c
+      hyper_anf_serial.c
       serial.c
 )
 
