@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include "null.h"
 #include "boolean.h"
+#include "check_ptr.h"
 
 void error_message(char* descr) {
   fprintf(stderr, "Error in format of description: < %s > SKIPPING\n", descr);
@@ -68,6 +69,7 @@ int parse_node_descr_to (char *descr, node_t *node) {
 
 node_t * parse_node_descr (char *descr) {
   node_t * node = malloc(sizeof(node_t));
+  check_ptr(node);
 
   parse_node_descr_to(descr, node);
 
@@ -130,6 +132,7 @@ char * read_file (char * filename) {
   fseek(f, 0, SEEK_SET);
 
   char *bytes = malloc(pos);
+  // Already checking memory, no need to call check_ptr
   if (bytes == NULL) {
     fprintf(stderr, "ERROR: Not enough memory to load file %s in memory\n",
             filename);
@@ -170,6 +173,7 @@ int parse_graph_string (char *str, node_t **nodes, int *n) {
 
   if (*n != 0) {
     *nodes = malloc(*n * sizeof(node_t));
+    check_ptr(nodes);
   } else {
     fprintf(stderr, "%s:%d: ERROR: trying to allocate 0 bytes.\n",
             __FILE__, __LINE__);

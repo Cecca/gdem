@@ -1,5 +1,6 @@
 #include "hll_counter.h"
 #include <assert.h>
+#include "check_ptr.h"
 
 void hll_cnt_init (hll_counter_t *counter, size_t bits) {
   assert( bits < sizeof(hll_hash_t)*8
@@ -15,6 +16,7 @@ void hll_cnt_init (hll_counter_t *counter, size_t bits) {
   size_t mem = counter->m*sizeof(hll_reg_t);
 
   counter->registers = (hll_reg_t*) malloc(mem);
+  check_ptr(counter->registers);
   memset(counter->registers, 0, mem);
 }
 
@@ -25,6 +27,7 @@ void hll_cnt_free (hll_counter_t * counter) {
 
 hll_counter_t * hll_cnt_new(size_t bits) {
   hll_counter_t *c = malloc(sizeof(hll_counter_t));
+  check_ptr(c);
   hll_cnt_init(c, bits);
   return c;
 }
@@ -37,8 +40,10 @@ void hll_cnt_delete(hll_counter_t * counter) {
 hll_counter_t * hll_cnt_copy(hll_counter_t * counter) {
   assert(counter->registers != NULL);
   hll_counter_t *copy = malloc(sizeof(hll_counter_t));
+  check_ptr(copy);
   memcpy(copy, counter, sizeof(hll_counter_t));
   copy->registers = malloc(counter->m*sizeof(hll_reg_t));
+  check_ptr(copy->registers);
   hll_cnt_copy_to(counter, copy);
   return copy;
 }

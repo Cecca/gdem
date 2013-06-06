@@ -6,8 +6,9 @@
 #include "parser.h"
 #include "null.h"
 #include "debug.h"
+#include "check_ptr.h"
 
-#define COUNTER_BITS 10
+#define COUNTER_BITS 7
 #define MAX_ITER 10
 
 int main(int argc, char **argv) {
@@ -24,6 +25,7 @@ int main(int argc, char **argv) {
   hll_cardinality_t *neighbourhood_function;
 
   neighbourhood_function = malloc(sizeof(hll_cardinality_t) * MAX_ITER);
+  check_ptr(neighbourhood_function);
 
   int rc = parse_graph_file(argv[1], &nodes, &n);
   if (rc < 0) {
@@ -37,7 +39,9 @@ int main(int argc, char **argv) {
   printf("Loaded graph with %d nodes\n", n);
 
   counters = malloc(n * sizeof(hll_counter_t));
+  check_ptr(counters);
   counters_prev = malloc(n * sizeof(hll_counter_t));
+  check_ptr(counters_prev)
 
   for (int i=0; i<n; ++i) {
     hll_cnt_init(& (counters[i]), COUNTER_BITS);
