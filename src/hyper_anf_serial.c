@@ -52,8 +52,9 @@ int effective_diameter ( node_t *graph,
     for (int i=0; i<n; ++i) {
       hll_counter_t node_counter = counters[i];
       // Then, for each neighbour
-      for (int j=0; j<n; ++j) {
-        hll_counter_t neighbour_counter = counters_prev[j];
+      for (int j=0; j<graph[i].num_out; ++j) {
+        node_id_t neighbour = graph[i].out[j];
+        hll_counter_t neighbour_counter = counters_prev[neighbour];
         // perform the union of the two counters
         hll_cnt_union_i(&node_counter, &neighbour_counter);
       }
