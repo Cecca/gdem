@@ -19,6 +19,7 @@ void hll_cnt_init (hll_counter_t *counter, size_t bits) {
 }
 
 void hll_cnt_free (hll_counter_t * counter) {
+  assert(counter->registers != NULL);
   free(counter->registers);
 }
 
@@ -34,6 +35,7 @@ void hll_cnt_delete(hll_counter_t * counter) {
 }
 
 hll_counter_t * hll_cnt_copy(hll_counter_t * counter) {
+  assert(counter->registers != NULL);
   hll_counter_t *copy = malloc(sizeof(hll_counter_t));
   memcpy(copy, counter, sizeof(hll_counter_t));
   copy->registers = malloc(counter->m*sizeof(hll_reg_t));
@@ -43,6 +45,8 @@ hll_counter_t * hll_cnt_copy(hll_counter_t * counter) {
 
 void hll_cnt_copy_to (hll_counter_t *from, hll_counter_t *to) {
   assert(from->b == to->b);
+  assert(from->registers != NULL);
+  assert(to->registers != NULL);
   memcpy(to->registers, from->registers, from->m*sizeof(hll_reg_t));
 }
 
@@ -59,6 +63,7 @@ hll_reg_t hll_cnt_rho(hll_hash_t x, unsigned int mask) {
 }
 
 void hll_cnt_add(hll_hash_t x, hll_counter_t * cnt) {
+  assert(cnt->registers != NULL);
   // Computes the register index
   size_t j = (cnt->b == 0)? 0 : x >> (sizeof(hll_hash_t)*8 - cnt->b);
   hll_reg_t r = hll_cnt_rho(x, cnt->mask);
@@ -67,6 +72,7 @@ void hll_cnt_add(hll_hash_t x, hll_counter_t * cnt) {
 }
 
 hll_cardinality_t hll_cnt_size(hll_counter_t * counter) {
+  assert(counter->registers != NULL);
   double denominator = 0;
   int i;
   for (i = 0; i<counter->m; ++i) {
@@ -80,6 +86,8 @@ hll_cardinality_t hll_cnt_size(hll_counter_t * counter) {
 
 hll_counter_t * hll_cnt_union(hll_counter_t * a, hll_counter_t * b) {
   assert(a->b == b->b);
+  assert(a->registers != NULL);
+  assert(b->registers != NULL);
   hll_counter_t * c = hll_cnt_new(a->b);
   int i = 0;
   for(; i<a->m; ++i) {
@@ -90,6 +98,8 @@ hll_counter_t * hll_cnt_union(hll_counter_t * a, hll_counter_t * b) {
 
 void hll_cnt_union_i(hll_counter_t *a, hll_counter_t *b) {
   assert(a->b == b->b);
+  assert(a->registers != NULL);
+  assert(b->registers != NULL);
   int i=0;
   for(; i<a->m; ++i) {
     a->registers[i] = MAX(a->registers[i], b->registers[i]);
@@ -99,6 +109,8 @@ void hll_cnt_union_i(hll_counter_t *a, hll_counter_t *b) {
 #undef MAX
 
 int hll_cnt_equals(hll_counter_t * a, hll_counter_t * b) {
+  assert(a->registers != NULL);
+  assert(b->registers != NULL);
   if(a->b != b->b) {
     return 0;
   }
