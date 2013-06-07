@@ -254,11 +254,120 @@ START_TEST (hll_union_i) {
 }
 END_TEST
 
+START_TEST (hll_union_monotonic) {
+  // Each element in the union of two counters should be greater or equals than
+  // the corresponding element in the original counters.
+  hll_counter_t *first, *second, *u;
+
+  // first test
+  // ==========
+  //
+  // two counters with 4 registers
+  first = hll_cnt_new(2);
+  second = hll_cnt_new(2);
+
+  first->registers[0] = 2;
+  second->registers[3] = 4;
+
+  u = hll_cnt_union(first, second);
+
+  for(int i=0; i<4; ++i) {
+    ck_assert(u->registers[i] >= first->registers[i]);
+    ck_assert(u->registers[i] >= second->registers[i]);
+  }
+
+  hll_cnt_delete(first);
+  hll_cnt_delete(second);
+  hll_cnt_delete(u);
+
+  // second test
+  // ===========
+  //
+  // two counters with 4 registers
+  first = hll_cnt_new(2);
+  second = hll_cnt_new(2);
+
+  first->registers[0] = 2;
+  first->registers[1] = 4;
+  first->registers[3] = 6;
+  second->registers[1] = 5;
+  second->registers[3] = 4;
+
+  u = hll_cnt_union(first, second);
+
+  for(int i=0; i<4; ++i) {
+    ck_assert(u->registers[i] >= first->registers[i]);
+    ck_assert(u->registers[i] >= second->registers[i]);
+  }
+
+  hll_cnt_delete(first);
+  hll_cnt_delete(second);
+  hll_cnt_delete(u);
+}
+END_TEST
+
+START_TEST (hll_union_i_monotonic) {
+  // Each element in the union of two counters should be greater or equals than
+  // the corresponding element in the original counters.
+  hll_counter_t *first, *second, *u;
+
+  // first test
+  // ==========
+  //
+  // two counters with 4 registers
+  first = hll_cnt_new(2);
+  second = hll_cnt_new(2);
+
+  first->registers[0] = 2;
+  second->registers[3] = 4;
+  u = hll_cnt_copy(first);
+
+  hll_cnt_union_i(u, second);
+
+  for(int i=0; i<4; ++i) {
+    ck_assert(u->registers[i] >= first->registers[i]);
+    ck_assert(u->registers[i] >= second->registers[i]);
+  }
+
+  hll_cnt_delete(first);
+  hll_cnt_delete(second);
+  hll_cnt_delete(u);
+
+  // second test
+  // ===========
+  //
+  // two counters with 4 registers
+  first = hll_cnt_new(2);
+  second = hll_cnt_new(2);
+
+  first->registers[0] = 2;
+  first->registers[1] = 4;
+  first->registers[3] = 6;
+  second->registers[1] = 5;
+  second->registers[3] = 4;
+
+  u = hll_cnt_copy(first);
+
+  hll_cnt_union_i(u, second);
+
+  for(int i=0; i<4; ++i) {
+    ck_assert(u->registers[i] >= first->registers[i]);
+    ck_assert(u->registers[i] >= second->registers[i]);
+  }
+
+  hll_cnt_delete(first);
+  hll_cnt_delete(second);
+  hll_cnt_delete(u);
+}
+END_TEST
+
 Suite * hll_counter_suite () {
   Suite *s = suite_create("HyperLogLog Counter");
   TCase *tc_core = tcase_create("Core");
   tcase_add_test(tc_core, hll_equals);
   tcase_add_test(tc_core, hll_union_i);
+  tcase_add_test(tc_core, hll_union_monotonic);
+  tcase_add_test(tc_core, hll_union_i_monotonic);
   tcase_add_test(tc_core, hll_copy_1);
   tcase_add_test(tc_core, hll_copy_2);
   tcase_add_test(tc_core, hll_copy_to_1);
