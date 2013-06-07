@@ -10,7 +10,7 @@ void error_message(char* descr) {
   fprintf(stderr, "Error in format of description: < %s > SKIPPING\n", descr);
 }
 
-#define MAX_ADJ_LEN 1000
+#define MAX_ADJ_LEN 10000
 
 int parse_node_descr_to (char *descr, node_t *node) {
   int id;
