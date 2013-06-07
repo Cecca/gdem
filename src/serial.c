@@ -9,7 +9,7 @@
 #include "check_ptr.h"
 #include "hyper_anf_serial.h"
 
-#define COUNTER_BITS 10
+#define COUNTER_BITS 1
 #define MAX_ITER 150
 
 int main(int argc, char **argv) {

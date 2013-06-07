@@ -57,7 +57,7 @@ void hll_cnt_copy_to (hll_counter_t *from, hll_counter_t *to) {
 
 hll_reg_t hll_cnt_rho(hll_hash_t x, hll_hash_t mask) {
   if( (x & mask) == 0 ) {
-    return sizeof(hll_hash_t)*8 - 1;
+    return sizeof(hll_hash_t)*8;
   }
   hll_reg_t i = 1;
   hll_hash_t k;
@@ -81,8 +81,12 @@ hll_cardinality_t hll_cnt_size(hll_counter_t * counter) {
   double denominator = 0;
   int i;
   for (i = 0; i<counter->m; ++i) {
-//    printf("%d\n", counter.registers[i]);
-    denominator += 1.0 / (1 << counter->registers[i]); // 1 / 2^register
+    // this `unsigned long long` 1literal is to avoid overflows. Since
+    // tipically registers are uint8_t values,
+    // using a literal `1` would result in a shift
+    // of 8 position of an 8 bit number, resulting in a `0` operand at
+    // the denominator.
+    denominator += 1.0 / (1ull << counter->registers[i]); // 1 / 2^register
   }
   return counter->m*counter->m*HLL_ALPHA/denominator;
 }
