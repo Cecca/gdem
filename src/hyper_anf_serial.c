@@ -4,11 +4,10 @@
 #include "hll_counter.h"
 #include "check_ptr.h"
 
-int effective_diameter ( node_t *graph,
-                         size_t n,
-                         double alpha,
-                         int bits,
-                         int max_iteration)
+int diameter (node_t *graph,
+              size_t n,
+              int bits,
+              int max_iteration)
 {
   // Declare counter arrays
   hll_counter_t *counters = malloc(n*sizeof(hll_counter_t));

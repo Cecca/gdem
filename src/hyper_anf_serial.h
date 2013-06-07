@@ -13,10 +13,9 @@
  * @param max_iteration
  * @return
  */
-int effective_diameter( node_t *graph,
-                        size_t n,
-                        double alpha,
-                        int bits,
-                        int max_iteration);
+int diameter( node_t *graph,
+              size_t n,
+              int bits,
+              int max_iteration);
 
 #endif // _HYPER_ANF_SERIAL_H_

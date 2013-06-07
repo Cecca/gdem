@@ -33,9 +33,9 @@ int main(int argc, char **argv) {
 
   printf("Loaded graph with %d nodes\n", n);
 
-  int diameter = effective_diameter(nodes, n, 0, COUNTER_BITS, MAX_ITER);
+  int diam = diameter(nodes, n, COUNTER_BITS, MAX_ITER);
 
-  printf("Diameter is %d\n", diameter);
+  printf("Diameter is %d\n", diam);
 
   // free resources
   for(int i=0; i<n; ++i) {
