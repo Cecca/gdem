@@ -55,12 +55,12 @@ void hll_cnt_copy_to (hll_counter_t *from, hll_counter_t *to) {
   memcpy(to->registers, from->registers, from->m*sizeof(hll_reg_t));
 }
 
-hll_reg_t hll_cnt_rho(hll_hash_t x, unsigned int mask) {
+hll_reg_t hll_cnt_rho(hll_hash_t x, hll_hash_t mask) {
   if( (x & mask) == 0 ) {
     return sizeof(hll_hash_t)*8;
   }
   hll_reg_t i = 1;
-  int k;
+  hll_hash_t k;
   for(k = x & mask; (k & 1) != 1 ; k = k >> 1) {
     ++i;
   }
