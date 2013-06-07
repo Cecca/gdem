@@ -398,6 +398,30 @@ START_TEST(hll_size_monotonic) {
 END_TEST
 #undef RANDOM
 
+START_TEST(hll_size_monotonic_2) {
+  hll_counter_t a, b;
+
+  hll_cnt_init(&a, 1);
+  hll_cnt_init(&b, 1);
+
+  a.registers[0] = 32;
+  a.registers[1] = 0;
+
+  b.registers[0] = 2;
+  b.registers[1] = 0;
+
+  hll_cardinality_t
+      size_a = hll_cnt_size(&a),
+      size_b = hll_cnt_size(&b);
+
+  printf("size_a: %u\n"
+         "size_b: %u\n",
+         size_a, size_b);
+
+  ck_assert(size_a >= size_b);
+}
+END_TEST
+
 Suite * hll_counter_suite () {
   Suite *s = suite_create("HyperLogLog Counter");
   TCase *tc_core = tcase_create("Core");
@@ -416,6 +440,7 @@ Suite * hll_counter_suite () {
   tcase_add_test(tc_core, hll_test_size_2);
   tcase_add_test(tc_core, hll_size_precision);
   tcase_add_test(tc_core, hll_size_monotonic);
+  tcase_add_test(tc_core, hll_size_monotonic_2);
   suite_add_tcase(s, tc_core);
 
   return s;
