@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <limits.h>
+#include <time.h>
 
 START_TEST (hll_counter_rho_test) {
   hll_counter_t *c = hll_cnt_new(3);
@@ -361,6 +362,42 @@ START_TEST (hll_union_i_monotonic) {
 }
 END_TEST
 
+#define RANDOM rand() + rand() + rand() + rand()
+START_TEST(hll_size_monotonic) {
+  // the estimated size of the union of two counters should be greater or
+  // equals than the estimated size of each original counter.
+  hll_counter_t a, b;
+
+  hll_cnt_init(&a, 2);
+  hll_cnt_init(&b, 2);
+
+  for(int i=0; i<1024; ++i) {
+    hll_cnt_add(RANDOM, &a);
+    hll_cnt_add(RANDOM, &b);
+  }
+
+  hll_cardinality_t
+      size_a = hll_cnt_size(&a),
+      size_b = hll_cnt_size(&b);
+
+  hll_cnt_union_i(&a, &b);
+
+  hll_cardinality_t size_union = hll_cnt_size(&a);
+
+  printf("size_a: %u\n"
+         "size_b: %u\n"
+         "size_union: %u\n",
+         size_a, size_b, size_union);
+
+  ck_assert(size_union >= size_a);
+  ck_assert(size_union >= size_b);
+
+  hll_cnt_free(&a);
+  hll_cnt_free(&b);
+}
+END_TEST
+#undef RANDOM
+
 Suite * hll_counter_suite () {
   Suite *s = suite_create("HyperLogLog Counter");
   TCase *tc_core = tcase_create("Core");
@@ -378,6 +415,7 @@ Suite * hll_counter_suite () {
   tcase_add_test(tc_core, hll_test_size);
   tcase_add_test(tc_core, hll_test_size_2);
   tcase_add_test(tc_core, hll_size_precision);
+  tcase_add_test(tc_core, hll_size_monotonic);
   suite_add_tcase(s, tc_core);
 
   return s;
@@ -395,6 +433,8 @@ int main() {
         sizeof(hll_reg_t),
         sizeof(hll_hash_t)
         );
+
+  srand(time(NULL));
 
   int number_failed = 0;
   Suite *s = hll_counter_suite();
