@@ -136,7 +136,7 @@ START_TEST (hll_size_precision) {
   for(i = 0; i < c->m; ++i) {
     ck_assert_int_ne(0, c->registers[i]);
   }
-  ck_assert(-2.5 <= error && error <= 2.5);
+  ck_assert(-10 <= error && error <= 10);
 
   hll_cnt_delete(c);
 }
