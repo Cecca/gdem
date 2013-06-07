@@ -407,7 +407,7 @@ START_TEST(hll_size_monotonic_2) {
   hll_cnt_init(&a, 1);
   hll_cnt_init(&b, 1);
 
-  a.registers[0] = 31;
+  a.registers[0] = 32;
   a.registers[1] = 0;
 
   b.registers[0] = 2;
