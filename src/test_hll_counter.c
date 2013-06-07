@@ -399,12 +399,15 @@ END_TEST
 #undef RANDOM
 
 START_TEST(hll_size_monotonic_2) {
+  // this test case arised during debugging: using the number of bits of the
+  // hash type for the `0` element will cause the whole program to fail, since
+  // the neighbourhood functions will be decreasing.
   hll_counter_t a, b;
 
   hll_cnt_init(&a, 1);
   hll_cnt_init(&b, 1);
 
-  a.registers[0] = 32;
+  a.registers[0] = 31;
   a.registers[1] = 0;
 
   b.registers[0] = 2;

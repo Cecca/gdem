@@ -57,7 +57,7 @@ void hll_cnt_copy_to (hll_counter_t *from, hll_counter_t *to) {
 
 hll_reg_t hll_cnt_rho(hll_hash_t x, hll_hash_t mask) {
   if( (x & mask) == 0 ) {
-    return sizeof(hll_hash_t)*8;
+    return sizeof(hll_hash_t)*8 - 1;
   }
   hll_reg_t i = 1;
   hll_hash_t k;
