@@ -62,7 +62,7 @@ int diameter (node_t *graph,
         hll_cnt_union_i(&node_counter, &neighbour_counter);
 #ifndef NDEBUG // check that the counter increased
         hll_counter_t prev = counters_prev[i];
-        printf("| current |    prev |\n", i);
+        printf("| current |    prev |\n");
         for(int r=0; r<node_counter.m; ++r) {
           printf("| %7u | %7u |\n",
                  node_counter.registers[r], prev.registers[r]);
