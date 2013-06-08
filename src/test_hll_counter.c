@@ -149,8 +149,8 @@ START_TEST (hll_equals) {
 
   ck_assert(hll_cnt_equals(c1,c2));
 
-  hll_cnt_add(1234, c1);
-  hll_cnt_add(1234, c2);
+  hll_cnt_add(123, c1);
+  hll_cnt_add(123, c2);
 
   ck_assert(hll_cnt_equals(c1,c2));
 
@@ -196,7 +196,7 @@ START_TEST (hll_copy_to_1) {
   hll_cnt_init(&c1, 2);
   hll_cnt_init(&c2, 2);
 
-  hll_cnt_add(321, &c1);
+  hll_cnt_add(123, &c1);
 
   hll_cnt_copy_to(&c1, &c2);
 
