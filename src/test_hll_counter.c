@@ -105,8 +105,15 @@ int compare (const void * a, const void * b)
 }
 
 START_TEST (hll_size_precision) {
-  hll_counter_t *c = hll_cnt_new(9);
+#if defined( HASH_SMALL )
+  size_t bits = 4;
+  int numInsertions = 500;
+#else
+  size_t bits = 9;
   int numInsertions = 999999;
+#endif
+  hll_counter_t *c = hll_cnt_new(bits);
+
   hll_hash_t stream[numInsertions];
   int i=0;
   // Populate stream
