@@ -61,6 +61,33 @@
  * 
  * The parameter \f$\alpha\f$ is used to correct a multiplicative bias of the
  * algorithm and is defined in macro ::HLL_ALPHA.
+ *
+ * Compilation notes
+ * =================
+ *
+ * When compiling, the dimension of the has values is conditionally determined
+ * based on a couple of macros:
+ *
+ *  - `HASH_SMALL`: uses 8 bit hashes, that is `uint8_t`
+ *  - `HASH_MEDIUM`: use `uint16_t` integers for hash values
+ *  - `HASH_BIG`: use `uint32_t` integers, this is the default
+ *  - `HASH_HUGE`: use 64 bit hashes, that is `uint64_t` integers
+ *
+ * The rationale behind using different integer types is that graphs that have
+ * a number of nodes significantly smaller than the maximum representable by
+ * the datatype will underutilize the registers. The problem with this is that
+ * in this way we get only the first couple of registers with nonzero values,
+ * heavily biasing the cardinality extimation.
+ *
+ * To select the right flag at compilation time, specify it on the command line
+ * of `cmake`:
+ *
+ *     mkdir gdem_small
+ *     cd gdem_small
+ *     cmake -DCMAKE_BUILD_TYPE=Release -DHASH_SMALL=ON ..
+ *     make
+ *
+ * Thus we will get different binaries, each suitable for different graph sizes.
  */
 
 #ifndef _HLL_COUNTER_H_
@@ -99,7 +126,15 @@ typedef uint8_t hll_reg_t;
  *
  * This data type is the input of the add operation.
  */
+#if defined( HASH_SMALL )
+typedef uint8_t hll_hash_t;
+#elif defined( HASH_MEDIUM )
+typedef uint16_t hll_hash_t;
+#elif defined( HASH_HUGE )
+typedef uint64_t hll_hash_t;
+#else // HASH_BIG is the default
 typedef uint32_t hll_hash_t;
+#endif
 
 /**
  * @brief This struct is the actual counter.
