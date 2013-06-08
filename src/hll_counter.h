@@ -84,7 +84,7 @@
  *
  *     mkdir gdem_small
  *     cd gdem_small
- *     cmake -DCMAKE_BUILD_TYPE=Release -DHASH_SMALL=ON ..
+ *     cmake -DCMAKE_BUILD_TYPE=Release -DHASH_SIZE=Small ..
  *     make
  *
  * Thus we will get different binaries, each suitable for different graph sizes.
