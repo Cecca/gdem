@@ -17,41 +17,41 @@ int main(int argc, char** argv) {
   MPI_Comm_size(MPI_COMM_WORLD,&numtasks);
   MPI_Comm_rank(MPI_COMM_WORLD,&rank);
   MPI_Get_processor_name(hostname, &len);
-//  printf ("Number of tasks= %d My rank= %d Running on %s\n", numtasks,rank,hostname);
 
-  // do some circular ping pong
+  // each process will receive a counter from its left nearest neighbour
+  // and send its one to the nearest right neighbour.
 
-  char *inMsg, *outMsg = "ping_pong_ball";
-  int msgLen = strlen(outMsg);
-  MPI_Status status;
+  int reg = rank;
 
-  if(rank == 0) {
-    int dest = 1,
-        src = numtasks-1;
-    MPI_Send(&outMsg, msgLen, MPI_CHAR, dest, PING_PONG_BALL, MPI_COMM_WORLD);
-    printf("Task %d: Sent %s to task %d\n", rank, outMsg, dest);
-    MPI_Recv(&inMsg, msgLen, MPI_CHAR, src, PING_PONG_BALL, MPI_COMM_WORLD, &status);
-    printf("Task %d: Received %s from task %d\n", rank, inMsg, src);
-  } else if(rank == (numtasks-1)) {
-      int dest = 0,
-          src = numtasks-2;
-      MPI_Recv(&inMsg, msgLen, MPI_CHAR, src, PING_PONG_BALL, MPI_COMM_WORLD, &status);
-      printf("Task %d: Received %s from task %d\n", rank, inMsg, src);
-      MPI_Send(&outMsg, msgLen, MPI_CHAR, dest, PING_PONG_BALL, MPI_COMM_WORLD);
-      printf("Task %d: Sent %s to task %d\n", rank, outMsg, dest);
-  } else {
-    int dest = rank + 1,
-        src = rank - 1;
-    MPI_Recv(&inMsg, msgLen, MPI_CHAR, src, PING_PONG_BALL, MPI_COMM_WORLD, &status);
-    printf("Task %d: Received %s from task %d\n", rank, inMsg, src);
-    MPI_Send(&outMsg, msgLen, MPI_CHAR, dest, PING_PONG_BALL, MPI_COMM_WORLD);
-    printf("Task %d: Sent %s to task %d\n", rank, outMsg, dest);
+#define NUM_NEIGHS 1
+
+  int dests[] = {(rank+1) % numtasks};
+  int srcs[] = {(rank-1) % numtasks};
+
+  int results[NUM_NEIGHS];
+
+  // the first half is for receivs, the second one is for sends
+  MPI_Request requests[2*NUM_NEIGHS];
+
+  // statuses of receive operations
+  MPI_Status stats[2*NUM_NEIGHS];
+
+  for(int i=0; i<NUM_NEIGHS; ++i) {
+    // receive non blocking from neighbours
+    MPI_Irecv (&results[i], 1, MPI_INT, srcs[i], 0, MPI_COMM_WORLD, &requests[i]);
   }
 
-  int count;
-  MPI_Get_count(&status, MPI_CHAR, &count);
-  printf("Task %d: Received %d char(s) from task %d with tag %d \n",
-         rank, count, status.MPI_SOURCE, status.MPI_TAG);
+  for(int i=0; i<NUM_NEIGHS; ++i) {
+    // send non blocking to neighbours
+    MPI_Isend (&reg, 1, MPI_INT, dests[i], 0, MPI_COMM_WORLD, &requests[i+NUM_NEIGHS]);
+  }
+
+  // wait for communication to complete
+  MPI_Waitall(NUM_NEIGHS*2, requests, stats);
+
+  for (int i=0; i<NUM_NEIGHS; ++i) {
+    printf("Task %d received from neighbours: %d\n", rank, results[i]);
+  }
 
   MPI_Finalize();
   return 0;
