@@ -6,6 +6,14 @@ add_executable ( serial
       serial.c
 )
 
+add_executable ( parallel
+      hll_counter.c
+      parser.c
+      graph.c
+      hyper_anf_mpi.c
+      parallel.c
+)
+
 add_executable ( mpiHello
       mpi_hello.c
 )
