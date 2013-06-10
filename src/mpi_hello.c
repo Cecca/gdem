@@ -23,10 +23,10 @@ int main(int argc, char** argv) {
 
   int reg = rank;
 
-#define NUM_NEIGHS 1
+#define NUM_NEIGHS 2
 
-  int dests[] = {(rank+1) % numtasks};
-  int srcs[] = {(rank-1) % numtasks};
+  int dests[] = {(rank+1) % numtasks, (rank+2) % numtasks};
+  int srcs[] = {(rank-1) % numtasks, (rank-2) % numtasks};
 
   int results[NUM_NEIGHS];
 
