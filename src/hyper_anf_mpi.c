@@ -18,13 +18,37 @@ int mpi_diameter( node_t *partial_graph,
   // - use mpi_reduce to compute the number of changed nodes.
   // - if no nodes changed or we are at max_iteration, stop.
   // ---------------------------------------------------------
-  // Allocate memory to receive counters from neighbours, for each node
+  // Allocate memory to receive counters from out neighbours, for each node
   mpi_neighbourhood *neighbourhoods =
       malloc(partial_graph_cardinality * sizeof(mpi_neighbourhood));
   check_ptr(neighbourhoods);
   for (int i=0; i<partial_graph_cardinality; ++i) {
-
+    mpi_neighbourhood_init(&neighbourhoods[i], partial_graph[i].num_out, bits);
   }
+  // Allocate memory for the current and previous version of the counter
+  // for each node
+  hll_counter_t *counters =
+      malloc(partial_graph_cardinality * sizeof(hll_counter_t));
+  check_ptr(counters);
+  hll_counter_t *counters_prev =
+      malloc(partial_graph_cardinality * sizeof(hll_counter_t));
+  check_ptr(counters_prev);
+  for (int i = 0; i < partial_graph_cardinality; ++i) {
+    hll_cnt_init(&counters[i], bits);
+    hll_cnt_init(&counters_prev[i], bits);
+    // add the node itself to each counter
+    hll_cnt_add(partial_graph[i].id, &(counters[i]));
+    hll_cnt_add(partial_graph[i].id, &(counters_prev[i]));
+  }
+
+
+  // free the memory
+  for (int i = 0; i < partial_graph_cardinality; ++i) {
+    hll_cnt_free(&counters[i]);
+    hll_cnt_free(&counters_prev[i]);
+    mpi_neighbourhood_free(&neighbourhoods[i]);
+  }
+  return -1;
 }
 
 
