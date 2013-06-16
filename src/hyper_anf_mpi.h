@@ -10,6 +10,12 @@
  *
  * **Attention**: assumes that MPI_inithas already been called.
  *
+ * TODO: add a new mpi datatype for the message: the message is composed
+ * of two parts:
+ *
+ *  1. the id of the node
+ *  2. the counter associated to that node
+ *
  * @param partial_graph
  * @param partial_graph_cardinality
  * @param bits

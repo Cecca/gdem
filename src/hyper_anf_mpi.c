@@ -32,6 +32,13 @@ void init_counters( hll_counter_t **counters,
   }
 }
 
+/*
+ * We need several things for each node:
+ *
+ *  - the list of processors responsible for their out neighbours
+ *  - the list of processors responsible for their in neighbourhoods
+ *  - the list of hll_counters of their outgoing neighbours
+ */
 int mpi_diameter( node_t *partial_graph,
                   size_t partial_graph_cardinality,
                   int bits,
