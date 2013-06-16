@@ -4,7 +4,7 @@
 #include "graph.h"
 
 /**
- * @brief Computes the effective diameter at alpha.
+ * @brief Computes the diameter of the given graph.
  *
  * @param graph
  * @param n
