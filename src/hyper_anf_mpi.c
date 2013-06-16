@@ -52,36 +52,6 @@ void free_context (context_t *context) {
   free(context->neighbourhoods);
 }
 
-void init_neighbourhoods( mpi_neighbourhood_t **neighbourhoods,
-                          int n, int bits,
-                          node_t *partial_graph) {
-//  *neighbourhoods =
-//        malloc(n * sizeof(mpi_neighbourhood_t));
-//  check_ptr(neighbourhoods);
-//  for (int i=0; i<n; ++i) {
-//    mpi_neighbourhood_init(
-//          &(*neighbourhoods[i]), partial_graph[i].num_out, bits);
-//  }
-}
-
-void init_counters( hll_counter_t **counters,
-                    hll_counter_t **counters_prev,
-                    int n, int bits,
-                    node_t *partial_graph)
-{
-  *counters = malloc(n * sizeof(hll_counter_t));
-  check_ptr(counters);
-  *counters_prev = malloc(n * sizeof(hll_counter_t));
-  check_ptr(counters_prev);
-  for (int i = 0; i < n; ++i) {
-    hll_cnt_init(&(*counters[i]), bits);
-    hll_cnt_init(&(*counters_prev[i]), bits);
-    // add the node itself to each counter
-    hll_cnt_add(partial_graph[i].id, &(*counters[i]));
-    hll_cnt_add(partial_graph[i].id, &(*counters_prev[i]));
-  }
-}
-
 /*
  * We need several things for each node:
  *
@@ -89,10 +59,7 @@ void init_counters( hll_counter_t **counters,
  *  - the list of processors responsible for their in neighbourhoods
  *  - the list of hll_counters of their outgoing neighbours
  */
-int mpi_diameter( node_t *partial_graph,
-                  size_t partial_graph_cardinality,
-                  int bits,
-                  int max_iteration)
+int mpi_diameter( context_t * context )
 {
   // - for each node in partial graph
   //   - expect to receive counters from neighbours
@@ -105,37 +72,8 @@ int mpi_diameter( node_t *partial_graph,
   // - if no nodes changed or we are at max_iteration, stop.
   // ---------------------------------------------------------
   // Allocate memory to receive counters from out neighbours, for each node
-  int num_processors;
-  MPI_Comm_size(MPI_COMM_WORLD,&num_processors);
 
-  mpi_neighbourhood_t *neighbourhoods;
-  init_neighbourhoods( &neighbourhoods,
-                       partial_graph_cardinality, bits, partial_graph);
-
-  // Allocate memory for the current and previous version of the counter
-  // for each node
-  hll_counter_t *counters, *counters_prev;
-  init_counters( &counters, &counters_prev,
-                 partial_graph_cardinality, bits, partial_graph);
-
-  int num_changed = INT_MAX;
-  int iteration = 0;
-  // main loop
-  while (num_changed != 0 && iteration < max_iteration) {
-
-    ++iteration;
-  }
-
-  // free the memory
-  for (int i = 0; i < partial_graph_cardinality; ++i) {
-    hll_cnt_free(&counters[i]);
-    hll_cnt_free(&counters_prev[i]);
-    mpi_neighbourhood_free(&neighbourhoods[i]);
-  }
-  free(counters);
-  free(counters_prev);
-  free(neighbourhoods);
-  return iteration -1;
+  return context->iteration - 1;
 }
 
 

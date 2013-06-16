@@ -71,10 +71,7 @@ void free_context(context_t * context);
  * @param max_iteration
  * @return
  */
-int mpi_diameter( node_t *partial_graph,
-                  size_t partial_graph_cardinality,
-                  int bits,
-                  int max_iteration);
+int mpi_diameter(context_t *context);
 
 /**
  * @brief Returns the global rank of the processor responsible for the node.
