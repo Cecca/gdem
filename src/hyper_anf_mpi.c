@@ -62,6 +62,7 @@ int mpi_diameter( context_t * context )
     // reset the number of changed nodes
     context->num_changed = 0;
     // compute the neighbourhood function before updating counters.
+    compute_neighbourhood_function(context);
 
     // - for each node in partial graph
     //   - expect to receive counters from neighbours
@@ -72,6 +73,10 @@ int mpi_diameter( context_t * context )
     // - use mpi_reduce to sum all the sizes and get N(t)
     // - use mpi_reduce to compute the number of changed nodes.
     // - if no nodes changed or we are at max_iteration, stop.
+    for (int i = 0; i < context->num_nodes; ++i) {
+      hll_counter_t node_counter = context->counters[i];
+
+    }
 
     ++context->iteration;
   }

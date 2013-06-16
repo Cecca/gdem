@@ -70,10 +70,14 @@ void free_context(context_t * context);
  * A context must be allocated before using this function:
  *
  * ~~~~~c
+ * MPI_Init(argc, argv);
+ * // ...
  * context_t ctx;
  * init_context(&ctx, partial_graph, num_nodes, bits, max_iteration);
  * mpi_diameter(&ctx);
  * free_context(&ctx);
+ * // ...
+ * MPI_Finalize();
  * ~~~~~
  *
  * @param partial_graph
