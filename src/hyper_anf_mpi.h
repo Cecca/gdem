@@ -1,6 +1,10 @@
 #ifndef _HYPER_ANF_MPI_H_
 #define _HYPER_ANF_MPI_H_
 
+/**
+ * @file hyper_anf_mpi.h
+ */
+
 #include <mpi.h>
 #include "graph.h"
 #include "hll_counter.h"
@@ -59,11 +63,17 @@ void free_context(context_t * context);
  *
  * **Attention**: assumes that MPI_init has already been called.
  *
- * TODO: add a new mpi datatype for the message: the message is composed
- * of two parts:
+ * Usage
+ * -----
  *
- *  1. the id of the node
- *  2. the counter associated to that node
+ * A context must be allocated before using this function:
+ *
+ * ~~~~~c
+ * context_t ctx;
+ * init_context(&ctx, partial_graph, num_nodes, bits, max_iteration);
+ * mpi_diameter(&ctx);
+ * free_context(&ctx);
+ * ~~~~~
  *
  * @param partial_graph
  * @param partial_graph_cardinality
