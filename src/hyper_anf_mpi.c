@@ -80,6 +80,18 @@ int mpi_diameter( context_t * context )
   return context->iteration - 1;
 }
 
+void compute_neighbourhood_function (context_t * context) {
+  int local_sum = 0;
+  for (int i = 0; i < context->num_nodes; ++i) {
+    local_sum += hll_cnt_size(&context->counters[i]);
+  }
+  int sum;
+  MPI_Reduce(&local_sum, &sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+  if ( context->rank == 0 ) {
+    printf("N(%d) = %d\n", context->iteration, sum);
+  }
+}
+
 
 inline int get_processor_rank (node_id_t node, int num_processors) {
   return node % num_processors;

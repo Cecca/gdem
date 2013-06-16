@@ -84,6 +84,8 @@ void free_context(context_t * context);
  */
 int mpi_diameter(context_t *context);
 
+void compute_neighbourhood_function(context_t * context);
+
 /**
  * @brief Returns the global rank of the processor responsible for the node.
  * @param node
