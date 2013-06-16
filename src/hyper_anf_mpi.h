@@ -22,6 +22,7 @@ struct context {
   size_t num_nodes; /**< The number of nodes under the responsibility of
                       *  this processor.
                       */
+  node_t *nodes; /**< The nodes under the responsibility of this processor */
   hll_counter_t *counters; /**< The array of current counters, one for each
                              *  node. The size is `num_nodes`
                              */
@@ -34,10 +35,15 @@ struct context {
   int iteration; /**< The current algorithm iteration */
   int num_changed; /**< The number of nodes changed since the last iteration */
   int num_processors; /**< The number of processors */
+  int max_iteration; /**< The maximum iteration number we are allowed to do */
 };
 typedef struct context context_t;
 
-void init_context(context_t * context);
+void init_context(context_t * context,
+                  node_t *partial_graph,
+                  size_t partial_graph_cardinality,
+                  int bits,
+                  int max_iteration);
 
 void free_context(context_t * context);
 

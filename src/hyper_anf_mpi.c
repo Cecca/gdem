@@ -3,16 +3,54 @@
 #include <mpi.h>
 #include <limits.h>
 
+void init_context ( context_t *context,
+                    node_t *partial_graph,
+                    size_t partial_graph_cardinality,
+                    int bits,
+                    int max_iteration)
+{
+  context->num_nodes = partial_graph_cardinality;
+  context->iteration = 0;
+  context->num_changed = INT_MAX;
+  context->max_iteration = max_iteration;
+  // get the number of processors
+  MPI_Comm_size(MPI_COMM_WORLD, & context->num_processors);
+
+  context->nodes = partial_graph;
+
+  // init neighbourhoods
+  context->neighbourhoods =
+        malloc(context->num_nodes * sizeof(mpi_neighbourhood_t));
+  check_ptr(context->neighbourhoods);
+  for (int i=0; i<context->num_nodes; ++i) {
+    mpi_neighbourhood_init(
+          &context->neighbourhoods[i], partial_graph[i].num_out, bits);
+  }
+
+  // init counters
+  context->counters = malloc(context->num_nodes * sizeof(hll_counter_t));
+  check_ptr(context->counters);
+  context->counters_prev = malloc(context->num_nodes * sizeof(hll_counter_t));
+  check_ptr(context->counters_prev);
+  for (int i = 0; i < context->num_nodes; ++i) {
+    hll_cnt_init(&context->counters[i], bits);
+    hll_cnt_init(&context->counters_prev[i], bits);
+    // add the node itself to each counter
+    hll_cnt_add(partial_graph[i].id, &context->counters[i]);
+    hll_cnt_add(partial_graph[i].id, &context->counters_prev[i]);
+  }
+}
+
 void init_neighbourhoods( mpi_neighbourhood_t **neighbourhoods,
                           int n, int bits,
                           node_t *partial_graph) {
-  *neighbourhoods =
-        malloc(n * sizeof(mpi_neighbourhood_t));
-  check_ptr(neighbourhoods);
-  for (int i=0; i<n; ++i) {
-    mpi_neighbourhood_init(
-          &(*neighbourhoods[i]), partial_graph[i].num_out, bits);
-  }
+//  *neighbourhoods =
+//        malloc(n * sizeof(mpi_neighbourhood_t));
+//  check_ptr(neighbourhoods);
+//  for (int i=0; i<n; ++i) {
+//    mpi_neighbourhood_init(
+//          &(*neighbourhoods[i]), partial_graph[i].num_out, bits);
+//  }
 }
 
 void init_counters( hll_counter_t **counters,
