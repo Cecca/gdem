@@ -19,6 +19,9 @@ int mpi_diameter( node_t *partial_graph,
   // - if no nodes changed or we are at max_iteration, stop.
   // ---------------------------------------------------------
   // Allocate memory to receive counters from out neighbours, for each node
+  int num_processors;
+  MPI_Comm_size(MPI_COMM_WORLD,&num_processors);
+
   mpi_neighbourhood *neighbourhoods =
       malloc(partial_graph_cardinality * sizeof(mpi_neighbourhood));
   check_ptr(neighbourhoods);
@@ -42,10 +45,6 @@ int mpi_diameter( node_t *partial_graph,
   }
 
   // exchange counters
-  for (int i = 0; i < partial_graph_cardinality; ++i) {
-    // expect counters from neighbours
-
-  }
 
   // free the memory
   for (int i = 0; i < partial_graph_cardinality; ++i) {
