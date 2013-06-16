@@ -13,6 +13,7 @@ add_executable ( parallel
       hyper_anf_mpi.c
       parallel.c
 )
+target_link_libraries(parallel ${MPI_C_LIBRARIES})
 
 add_executable ( mpiHello
       mpi_hello.c
