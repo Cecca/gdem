@@ -41,6 +41,17 @@ void init_context ( context_t *context,
   }
 }
 
+void free_context (context_t *context) {
+  for (int i = 0; i < context->num_nodes; ++i) {
+    hll_cnt_free(& context->counters[i]);
+    hll_cnt_free(& context->counters_prev[i]);
+    mpi_neighbourhood_free(& context->neighbourhoods[i]);
+  }
+  free(context->counters);
+  free(context->counters_prev);
+  free(context->neighbourhoods);
+}
+
 void init_neighbourhoods( mpi_neighbourhood_t **neighbourhoods,
                           int n, int bits,
                           node_t *partial_graph) {

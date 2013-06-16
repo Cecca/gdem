@@ -45,6 +45,13 @@ void init_context(context_t * context,
                   int bits,
                   int max_iteration);
 
+/**
+ * @brief free_context
+ *
+ * **Attention**: does not free the contents of the `nodes` array.
+ *
+ * @param context
+ */
 void free_context(context_t * context);
 
 /**
