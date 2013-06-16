@@ -30,7 +30,7 @@ typedef struct _mpi_neighbourhood {
   hll_counter_t *counters;
 } mpi_neighbourhood;
 
-void mpi_neighbourhood_init(mpi_neighbourhood *neigh, int n);
+void mpi_neighbourhood_init(mpi_neighbourhood *neigh, int n, int bits);
 
 void mpi_neighbourhood_free(mpi_neighbourhood *neigh);
 

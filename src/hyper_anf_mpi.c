@@ -19,19 +19,27 @@ int mpi_diameter( node_t *partial_graph,
   // - if no nodes changed or we are at max_iteration, stop.
   // ---------------------------------------------------------
   // Allocate memory to receive counters from neighbours, for each node
-
+  mpi_neighbourhood *neighbourhoods =
+      malloc(partial_graph_cardinality * sizeof(mpi_neighbourhood));
+  check_ptr(neighbourhoods);
   for (int i=0; i<partial_graph_cardinality; ++i) {
 
   }
 }
 
 
-void mpi_neighbourhood_init (mpi_neighbourhood *neigh, int n) {
+void mpi_neighbourhood_init (mpi_neighbourhood *neigh, int n, int bits) {
   neigh->dimension = n;
   neigh->counters = malloc(n*sizeof(hll_counter_t));
   check_ptr(neigh->counters);
+  for (int i = 0; i < n; ++i) {
+    hll_cnt_init(&neigh->counters[i], bits);
+  }
 }
 
 void mpi_neighbourhood_free (mpi_neighbourhood *neigh) {
+  for (int i = 0; i < neigh->dimension; ++i) {
+    hll_cnt_free(&neigh->counters[i]);
+  }
   free(neigh->counters);
 }
