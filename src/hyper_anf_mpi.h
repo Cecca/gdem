@@ -40,6 +40,7 @@ struct context {
   int num_changed; /**< The number of nodes changed since the last iteration */
   int num_processors; /**< The number of processors */
   int max_iteration; /**< The maximum iteration number we are allowed to do */
+  int rank; /**< The rank of the processor */
 };
 typedef struct context context_t;
 

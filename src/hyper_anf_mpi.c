@@ -15,6 +15,8 @@ void init_context ( context_t *context,
   context->max_iteration = max_iteration;
   // get the number of processors
   MPI_Comm_size(MPI_COMM_WORLD, & context->num_processors);
+  // get the rank of this processor
+  MPI_Comm_rank(MPI_COMM_WORLD, & context->rank);
 
   context->nodes = partial_graph;
 
@@ -52,26 +54,28 @@ void free_context (context_t *context) {
   free(context->neighbourhoods);
 }
 
-/*
- * We need several things for each node:
- *
- *  - the list of processors responsible for their out neighbours
- *  - the list of processors responsible for their in neighbourhoods
- *  - the list of hll_counters of their outgoing neighbours
- */
 int mpi_diameter( context_t * context )
 {
-  // - for each node in partial graph
-  //   - expect to receive counters from neighbours
-  //   - send counter to neighbours
-  // - for each node in partial graph
-  //   - update counters
-  //   - estimate sizes
-  // - use mpi_reduce to sum all the sizes and get N(t)
-  // - use mpi_reduce to compute the number of changed nodes.
-  // - if no nodes changed or we are at max_iteration, stop.
-  // ---------------------------------------------------------
-  // Allocate memory to receive counters from out neighbours, for each node
+  while ( context->num_changed != 0 &&
+          context->iteration < context->max_iteration)
+  {
+    // reset the number of changed nodes
+    context->num_changed = 0;
+    // compute the neighbourhood function before updating counters.
+
+    // - for each node in partial graph
+    //   - expect to receive counters from neighbours
+    //   - send counter to neighbours
+    // - for each node in partial graph
+    //   - update counters
+    //   - estimate sizes
+    // - use mpi_reduce to sum all the sizes and get N(t)
+    // - use mpi_reduce to compute the number of changed nodes.
+    // - if no nodes changed or we are at max_iteration, stop.
+
+    ++context->iteration;
+  }
+
 
   return context->iteration - 1;
 }
