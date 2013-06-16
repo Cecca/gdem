@@ -1,12 +1,13 @@
 #include "hyper_anf_mpi.h"
 #include "check_ptr.h"
 #include <mpi.h>
+#include <limits.h>
 
-void init_neighbourhoods( mpi_neighbourhood **neighbourhoods,
+void init_neighbourhoods( mpi_neighbourhood_t **neighbourhoods,
                           int n, int bits,
                           node_t *partial_graph) {
   *neighbourhoods =
-        malloc(n * sizeof(mpi_neighbourhood));
+        malloc(n * sizeof(mpi_neighbourhood_t));
   check_ptr(neighbourhoods);
   for (int i=0; i<n; ++i) {
     mpi_neighbourhood_init(
@@ -58,7 +59,7 @@ int mpi_diameter( node_t *partial_graph,
   int num_processors;
   MPI_Comm_size(MPI_COMM_WORLD,&num_processors);
 
-  mpi_neighbourhood *neighbourhoods;
+  mpi_neighbourhood_t *neighbourhoods;
   init_neighbourhoods( &neighbourhoods,
                        partial_graph_cardinality, bits, partial_graph);
 
@@ -68,7 +69,13 @@ int mpi_diameter( node_t *partial_graph,
   init_counters( &counters, &counters_prev,
                  partial_graph_cardinality, bits, partial_graph);
 
-  // exchange counters
+  int num_changed = INT_MAX;
+  int iteration = 0;
+  // main loop
+  while (num_changed != 0 && iteration < max_iteration) {
+
+    ++iteration;
+  }
 
   // free the memory
   for (int i = 0; i < partial_graph_cardinality; ++i) {
@@ -79,7 +86,7 @@ int mpi_diameter( node_t *partial_graph,
   free(counters);
   free(counters_prev);
   free(neighbourhoods);
-  return -1;
+  return iteration -1;
 }
 
 
@@ -87,7 +94,7 @@ inline int get_processor_rank (node_id_t node, int num_processors) {
   return node % num_processors;
 }
 
-void mpi_neighbourhood_init (mpi_neighbourhood *neigh, int n, int bits) {
+void mpi_neighbourhood_init (mpi_neighbourhood_t *neigh, int n, int bits) {
   neigh->dimension = n;
   neigh->counters = malloc(n*sizeof(hll_counter_t));
   check_ptr(neigh->counters);
@@ -96,7 +103,7 @@ void mpi_neighbourhood_init (mpi_neighbourhood *neigh, int n, int bits) {
   }
 }
 
-void mpi_neighbourhood_free (mpi_neighbourhood *neigh) {
+void mpi_neighbourhood_free (mpi_neighbourhood_t *neigh) {
   for (int i = 0; i < neigh->dimension; ++i) {
     hll_cnt_free(&neigh->counters[i]);
   }

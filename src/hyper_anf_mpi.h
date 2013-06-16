@@ -6,9 +6,45 @@
 #include "hll_counter.h"
 
 /**
+ * Defines an association between an array of counters and its dimension.
+ * Useful to keep track of the neighbours' counters.
+ */
+struct mpi_neighbourhood {
+  size_t dimension;
+  hll_counter_t *counters;
+};
+typedef struct mpi_neighbourhood mpi_neighbourhood_t;
+
+/**
+ * Struct that carries all the information needed by the diameter computation.
+ */
+struct context {
+  size_t num_nodes; /**< The number of nodes under the responsibility of
+                      *  this processor.
+                      */
+  hll_counter_t *counters; /**< The array of current counters, one for each
+                             *  node. The size is `num_nodes`
+                             */
+  hll_counter_t *counters_prev; /**< The array of previous counters, one for
+                                  *  each node. The size is `num_nodes`
+                                  */
+  mpi_neighbourhood_t *neighbourhoods; /**< The array of out neighbourhoods.
+                                       *  Size is `num_nodes`
+                                       */
+  int iteration; /**< The current algorithm iteration */
+  int num_changed; /**< The number of nodes changed since the last iteration */
+  int num_processors; /**< The number of processors */
+};
+typedef struct context context_t;
+
+void init_context(context_t * context);
+
+void free_context(context_t * context);
+
+/**
  * @brief Compute the diameter of the graph, given the partial view.
  *
- * **Attention**: assumes that MPI_inithas already been called.
+ * **Attention**: assumes that MPI_init has already been called.
  *
  * TODO: add a new mpi datatype for the message: the message is composed
  * of two parts:
@@ -35,17 +71,8 @@ int mpi_diameter( node_t *partial_graph,
  */
 int get_processor_rank( node_id_t node, int num_processors );
 
-/**
- * Defines an association between an array of counters and its dimension.
- * Useful to keep track of the neighbours' counters.
- */
-typedef struct _mpi_neighbourhood {
-  size_t dimension;
-  hll_counter_t *counters;
-} mpi_neighbourhood;
+void mpi_neighbourhood_init(mpi_neighbourhood_t *neigh, int n, int bits);
 
-void mpi_neighbourhood_init(mpi_neighbourhood *neigh, int n, int bits);
-
-void mpi_neighbourhood_free(mpi_neighbourhood *neigh);
+void mpi_neighbourhood_free(mpi_neighbourhood_t *neigh);
 
 #endif // _HYPER_ANF_MPI_H_
