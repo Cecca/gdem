@@ -22,6 +22,14 @@ int mpi_diameter( node_t *partial_graph,
                   int max_iteration);
 
 /**
+ * @brief Returns the global rank of the processor responsible for the node.
+ * @param node
+ * @param num_processors
+ * @return
+ */
+int get_processor_rank( node_id_t node, int num_processors );
+
+/**
  * Defines an association between an array of counters and its dimension.
  * Useful to keep track of the neighbours' counters.
  */

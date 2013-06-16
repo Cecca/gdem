@@ -41,6 +41,11 @@ int mpi_diameter( node_t *partial_graph,
     hll_cnt_add(partial_graph[i].id, &(counters_prev[i]));
   }
 
+  // exchange counters
+  for (int i = 0; i < partial_graph_cardinality; ++i) {
+    // expect counters from neighbours
+
+  }
 
   // free the memory
   for (int i = 0; i < partial_graph_cardinality; ++i) {
@@ -51,6 +56,10 @@ int mpi_diameter( node_t *partial_graph,
   return -1;
 }
 
+
+inline int get_processor_rank (node_id_t node, int num_processors) {
+  return node % num_processors;
+}
 
 void mpi_neighbourhood_init (mpi_neighbourhood *neigh, int n, int bits) {
   neigh->dimension = n;
