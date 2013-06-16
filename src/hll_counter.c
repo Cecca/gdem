@@ -128,3 +128,8 @@ inline int hll_cnt_equals(hll_counter_t * a, hll_counter_t * b) {
   }
   return 1;
 }
+
+inline void hll_cnt_replace_registers (hll_counter_t *cnt, hll_reg_t *reg) {
+  free(cnt->registers);
+  cnt->registers = reg;
+}

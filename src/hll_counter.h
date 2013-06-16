@@ -295,4 +295,16 @@ void hll_cnt_union_i(hll_counter_t * firstAndResult, hll_counter_t * second);
  */
 int hll_cnt_equals(hll_counter_t * a, hll_counter_t * b);
 
+/**
+ * @brief replaces the array of registers with the given one
+ *
+ * Frees the memory allocated to the old registers.
+ * Note that it is your responsibility to ensure that the new array has the same
+ * size fo the old one
+ *
+ * @param cnt the counter
+ * @param reg the array of registers we want to inject
+ */
+void hll_cnt_replace_registers(hll_counter_t * cnt, hll_reg_t * reg);
+
 #endif // _HLL_COUNTER_H_
