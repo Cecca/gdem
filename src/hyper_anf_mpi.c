@@ -76,6 +76,7 @@ int mpi_diameter( context_t * context )
     // compute the neighbourhood function before updating counters.
     compute_neighbourhood_function(context);
 
+    size_t request_idx = 0;
     // - for each node in partial graph
     for (int i = 0; i < context->num_nodes; ++i) {
       hll_counter_t node_counter = context->counters[i];
@@ -86,14 +87,14 @@ int mpi_diameter( context_t * context )
               neighbour, context->num_processors);
         // This is the counter for the neighbour
         // `context->neighbourhoods[i].counters[j];`
-//        MPI_Irecv( &context->neighbourhoods[i].counters[j], // the buffer of data that receivs the result
-//                   node_counter.m, // the number of data items being sent
-//                   MPI_UNSIGNED_CHAR, // the type of data being sent
-//                   neighbour_processor, // the source id.
-//                   neighbour, // the tag of message: the neighbour's ID
-//                   MPI_COMM_WORLD, // the communicator
-//                   &requests[i] // the requests array
-//                 );
+        MPI_Irecv( &context->neighbourhoods[i].counters[j], // the buffer of data that receivs the result
+                   node_counter.m, // the number of data items being sent
+                   MPI_UNSIGNED_CHAR, // the type of data being sent
+                   neighbour_processor, // the source id.
+                   neighbour, // the tag of message: the neighbour's ID
+                   MPI_COMM_WORLD, // the communicator
+                   & context->requests[request_idx++] // the requests array
+                 );
       }
       //   * send counter to neighbours
       // - for each node in partial graph
