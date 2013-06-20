@@ -68,8 +68,6 @@ void free_context (context_t *context) {
 
 // **Attention**: maybe it's not really important to tag messages. When we
 // perform the union of counters we don't care from where the counters arrive.
-// Moreover we could get rid of the counters_prev array, since we
-// are performing the communication before the update.
 int mpi_diameter( context_t * context )
 {
   while ( context->num_changed != 0 &&
@@ -120,9 +118,14 @@ int mpi_diameter( context_t * context )
       assert(request_idx == context->num_requests);
     }
     // - for each node in partial graph
-    //   * update counters
-    //   * estimate sizes
-    // - use mpi_reduce to sum all the sizes and get N(t)
+    for (int i = 0; i < context->num_nodes; ++i) {
+      hll_counter_t node_counter = context->counters[i];
+      //   * update counters
+      for (int j = 0; j < context->neighbourhoods[i].dimension; ++j) {
+        hll_cnt_union_i(
+              &node_counter, &context->neighbourhoods->counters[j]);
+      }
+    }
     // - use mpi_reduce to compute the number of changed nodes.
     // - if no nodes changed or we are at max_iteration, stop.
 
