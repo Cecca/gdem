@@ -66,6 +66,10 @@ void free_context (context_t *context) {
   free(context->requests);
 }
 
+// **Attention**: maybe it's not really important to tag messages. When we
+// perform the union of counters we don't care from where the counters arrive.
+// Moreover we could get rid of the counters_prev array, since we
+// are performing the communication before the update.
 int mpi_diameter( context_t * context )
 {
   while ( context->num_changed != 0 &&
@@ -80,31 +84,47 @@ int mpi_diameter( context_t * context )
     // - for each node in partial graph
     for (int i = 0; i < context->num_nodes; ++i) {
       hll_counter_t node_counter = context->counters[i];
-      //   * expect to receive counters from neighbours
+      //   * expect to receive counters from out neighbours
       for (int j = 0; j < context->nodes[i].num_out; ++j) {
         node_id_t neighbour = context->nodes[i].out[j];
         int neighbour_processor = get_processor_rank(
               neighbour, context->num_processors);
         // This is the counter for the neighbour
         // `context->neighbourhoods[i].counters[j];`
-        MPI_Irecv( &context->neighbourhoods[i].counters[j], // the buffer of data that receivs the result
+        MPI_Irecv( &context->neighbourhoods[i].counters[j].registers, // the buffer of data that receivs the result
                    node_counter.m, // the number of data items being sent
                    MPI_UNSIGNED_CHAR, // the type of data being sent
                    neighbour_processor, // the source id.
                    neighbour, // the tag of message: the neighbour's ID
                    MPI_COMM_WORLD, // the communicator
-                   & context->requests[request_idx++] // the requests array
+                   & context->requests[request_idx++] // the requests to store
                  );
-      }
-      //   * send counter to neighbours
-      // - for each node in partial graph
-      //   * update counters
-      //   * estimate sizes
-      // - use mpi_reduce to sum all the sizes and get N(t)
-      // - use mpi_reduce to compute the number of changed nodes.
-      // - if no nodes changed or we are at max_iteration, stop.
+      } // end receive from neghbours
+      //   * send counter to in neighbours
 
+      // this ID will be the tag of the message.
+      node_id_t node_id = context->nodes[i].id;
+      for (int j = 0; j < context->nodes[i].num_in; ++j) {
+        node_id_t neighbour_id = context->nodes[i].in[j];
+        int neighbour_processor = get_processor_rank(
+              neighbour_id, context->num_processors);
+        MPI_Isend( &node_counter.registers, // the buffer being sent
+                   node_counter.m, // the number of elements being sent
+                   MPI_UNSIGNED_CHAR, // the type of message elements
+                   neighbour_processor, // the destination of the message
+                   node_id, // the tag of the message: the node's ID
+                   MPI_COMM_WORLD, // the communicator
+                   & context->requests[request_idx++] // the request to store
+                 );
+      } // end send to neighbours
+      assert(request_idx == context->num_requests);
     }
+    // - for each node in partial graph
+    //   * update counters
+    //   * estimate sizes
+    // - use mpi_reduce to sum all the sizes and get N(t)
+    // - use mpi_reduce to compute the number of changed nodes.
+    // - if no nodes changed or we are at max_iteration, stop.
 
     ++context->iteration;
   }
