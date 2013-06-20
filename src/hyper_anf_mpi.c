@@ -2,6 +2,7 @@
 #include "check_ptr.h"
 #include <mpi.h>
 #include <limits.h>
+#include <assert.h>
 
 void init_context ( context_t *context,
                     node_t *partial_graph,
@@ -10,6 +11,7 @@ void init_context ( context_t *context,
                     int max_iteration)
 {
   context->num_nodes = partial_graph_cardinality;
+  assert(context->num_nodes > 0);
   context->iteration = 0;
   context->num_changed = INT_MAX;
   context->max_iteration = max_iteration;
@@ -41,6 +43,15 @@ void init_context ( context_t *context,
     hll_cnt_add(partial_graph[i].id, &context->counters[i]);
     hll_cnt_add(partial_graph[i].id, &context->counters_prev[i]);
   }
+
+  // init array of requests.
+  size_t sum = 0;
+  for (int i = 0; i < context->num_nodes; ++i) {
+    sum += context->nodes[i].num_out + context->nodes[i].num_in;
+  }
+  context->num_requests = sum;
+  context->requests = malloc(sum * sizeof(MPI_Request));
+  check_ptr(context->requests);
 }
 
 void free_context (context_t *context) {
@@ -52,6 +63,7 @@ void free_context (context_t *context) {
   free(context->counters);
   free(context->counters_prev);
   free(context->neighbourhoods);
+  free(context->requests);
 }
 
 int mpi_diameter( context_t * context )

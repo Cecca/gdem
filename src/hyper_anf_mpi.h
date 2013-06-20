@@ -36,6 +36,15 @@ struct context {
   mpi_neighbourhood_t *neighbourhoods; /**< The array of out neighbourhoods.
                                        *  Size is `num_nodes`
                                        */
+  MPI_Request *requests; /**< Array that holds all the receive and send
+                           * requests. The number of elements of this array is
+                           * $$
+                           * \\sum_{v \\in nodes} |\\delta^+(v)| +
+                           *                      |\\delta^-(v)|
+                           * $$
+                           */
+  size_t num_requests; /**< The number of requests. See requests.
+                         */
   int iteration; /**< The current algorithm iteration */
   int num_changed; /**< The number of nodes changed since the last iteration */
   int num_processors; /**< The number of processors */
