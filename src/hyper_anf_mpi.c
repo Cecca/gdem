@@ -65,16 +65,31 @@ int mpi_diameter( context_t * context )
     compute_neighbourhood_function(context);
 
     // - for each node in partial graph
-    //   - expect to receive counters from neighbours
-    //   - send counter to neighbours
-    // - for each node in partial graph
-    //   - update counters
-    //   - estimate sizes
-    // - use mpi_reduce to sum all the sizes and get N(t)
-    // - use mpi_reduce to compute the number of changed nodes.
-    // - if no nodes changed or we are at max_iteration, stop.
     for (int i = 0; i < context->num_nodes; ++i) {
       hll_counter_t node_counter = context->counters[i];
+      //   * expect to receive counters from neighbours
+      for (int j = 0; j < context->nodes[i].num_out; ++j) {
+        node_id_t neighbour = context->nodes[i].out[j];
+        int neighbour_processor = get_processor_rank(
+              neighbour, context->num_processors);
+        // This is the counter for the neighbour
+        // `context->neighbourhoods[i].counters[j];`
+//        MPI_Irecv( &context->neighbourhoods[i].counters[j], // the buffer of data that receivs the result
+//                   node_counter.m, // the number of data items being sent
+//                   MPI_UNSIGNED_CHAR, // the type of data being sent
+//                   neighbour_processor, // the source id.
+//                   neighbour, // the tag of message: the neighbour's ID
+//                   MPI_COMM_WORLD, // the communicator
+//                   &requests[i] // the requests array
+//                 );
+      }
+      //   * send counter to neighbours
+      // - for each node in partial graph
+      //   * update counters
+      //   * estimate sizes
+      // - use mpi_reduce to sum all the sizes and get N(t)
+      // - use mpi_reduce to compute the number of changed nodes.
+      // - if no nodes changed or we are at max_iteration, stop.
 
     }
 
