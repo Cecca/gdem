@@ -114,14 +114,16 @@ void mpi_neighbourhood_free(mpi_neighbourhood_t *neigh);
 /**
  * @brief loads the partial graph under the responsibility of this node.
  *
+ * @param rank The rank of the processor loading the file
  * @param filename the file name of the partial graph.
  * @param nodes a pointer to a `node_id_t` array that will be
  *              initialized with the ids of the nodes under the
  *              responsibility of the current processor.
- * #param n a pointer to the integer that will define the lenght of
+ * @param n a pointer to the integer that will define the lenght of
  *          the `nodes` array
  */
-void load_partial_graph(char * basename,
+void load_partial_graph( int rank,
+                         char * basename,
                          node_t **nodes,
                          int *n);
 

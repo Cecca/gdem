@@ -174,10 +174,12 @@ void mpi_neighbourhood_free (mpi_neighbourhood_t *neigh) {
 
 #define MAX_FILENAME_LENGTH 128
 
-void load_partial_graph (char *basename, node_t **nodes, int *n) {
-  int rank;
-  MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+void load_partial_graph ( int rank,
+                          char *basename,
+                          node_t **nodes,
+                          int *n) {
   char filename[MAX_FILENAME_LENGTH];
   sprintf(filename, "%s-%d.adj", basename, rank);
-  parse_graph_file(basename, nodes, n);
+  printf("Loading file %s\n", filename);
+  parse_graph_file(filename, nodes, n);
 }
