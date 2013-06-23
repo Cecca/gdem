@@ -15,6 +15,16 @@
 #
 # where basename can be specified on the command line (default is `graph`)
 # and `i` is the ID of the processor that will load that file.
+#
+# Usage
+# -----
+#
+# Simply pipe the graph file in the script with the desired options. For
+# example to split a graph called `rnd.adj` for `8` processors and place
+# the output in the `graph` directory, issue the following command:
+#
+# $ cat rnd.adj | python splitInput.py -n 8 -d graph -b rnd
+#
 
 import argparse
 import sys
