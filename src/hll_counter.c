@@ -1,6 +1,7 @@
 #include "hll_counter.h"
 #include <assert.h>
 #include "check_ptr.h"
+#include "debug.h"
 
 inline void hll_cnt_init (hll_counter_t *counter, size_t bits) {
   assert( bits < sizeof(hll_hash_t)*8
@@ -106,6 +107,7 @@ inline hll_counter_t * hll_cnt_union(hll_counter_t * a, hll_counter_t * b) {
 }
 
 inline void hll_cnt_union_i(hll_counter_t *a, hll_counter_t *b) {
+  printd("a->b = %d, b->b = %d\n", a->b, b->b);
   assert(a->b == b->b);
   assert(a->registers != NULL);
   assert(b->registers != NULL);

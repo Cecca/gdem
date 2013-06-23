@@ -2,6 +2,7 @@
 #include "check_ptr.h"
 #include "graph.h"
 #include "parser.h"
+#include "debug.h"
 #include <mpi.h>
 #include <limits.h>
 #include <assert.h>
@@ -84,6 +85,8 @@ int mpi_diameter( context_t * context )
     size_t request_idx = 0;
     // - for each node in partial graph
     for (int i = 0; i < context->num_nodes; ++i) {
+      printd("Node %d: %d out, %d in\n", context->nodes[i].id,
+             context->nodes[i].num_out, context->nodes[i].num_in);
       hll_counter_t node_counter = context->counters[i];
       //   * expect to receive counters from out neighbours
       for (int j = 0; j < context->nodes[i].num_out; ++j) {
@@ -118,8 +121,11 @@ int mpi_diameter( context_t * context )
                    & context->requests[request_idx++] // the request to store
                  );
       } // end send to neighbours
-      assert(request_idx == context->num_requests);
     }
+    // check if we have sent all requests
+    printd("Requests %d over %d\n", request_idx, context->num_requests);
+    assert(request_idx == context->num_requests);
+
     // - for each node in partial graph
     for (int i = 0; i < context->num_nodes; ++i) {
       hll_counter_t node_counter = context->counters[i];
