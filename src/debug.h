@@ -3,9 +3,14 @@
 
 #include <stdio.h>
 
+//#ifndef NDEBUG
+//#define printd(args...)\
+//  fprintf(stderr, "%s:%d: ",__FILE__,__LINE__);\
+//  fprintf(stderr, args)
+//#endif
+
 #ifndef NDEBUG
 #define printd(args...)\
-  fprintf(stderr, "%s:%d: ",__FILE__,__LINE__);\
   fprintf(stderr, args)
 #endif
 

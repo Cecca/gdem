@@ -107,7 +107,6 @@ inline hll_counter_t * hll_cnt_union(hll_counter_t * a, hll_counter_t * b) {
 }
 
 inline void hll_cnt_union_i(hll_counter_t *a, hll_counter_t *b) {
-  printd("a->b = %d, b->b = %d\n", a->b, b->b);
   assert(a->b == b->b);
   assert(a->registers != NULL);
   assert(b->registers != NULL);

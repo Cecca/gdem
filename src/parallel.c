@@ -24,6 +24,7 @@ int main(int argc, char **argv) {
   if(nodes != 0) {
     free(nodes);
   }
+  free_context(&context);
 
   MPI_Finalize();
 

@@ -131,8 +131,10 @@ int mpi_diameter( context_t * context )
       hll_counter_t node_counter = context->counters[i];
       //   * update counters
       for (int j = 0; j < context->neighbourhoods[i].dimension; ++j) {
+        printd("Performing union of counters for %d: counter %d\n",
+               context->nodes[i].id, j);
         hll_cnt_union_i(
-              &node_counter, &context->neighbourhoods->counters[j]);
+              &node_counter, &context->neighbourhoods[i].counters[j]);
       }
     }
     // - use mpi_reduce to compute the number of changed nodes.
