@@ -111,4 +111,18 @@ void mpi_neighbourhood_init(mpi_neighbourhood_t *neigh, int n, int bits);
 
 void mpi_neighbourhood_free(mpi_neighbourhood_t *neigh);
 
+/**
+ * @brief loads the partial graph under the responsibility of this node.
+ *
+ * @param filename the file name of the partial graph.
+ * @param nodes a pointer to a `node_id_t` array that will be
+ *              initialized with the ids of the nodes under the
+ *              responsibility of the current processor.
+ * #param n a pointer to the integer that will define the lenght of
+ *          the `nodes` array
+ */
+void load_partial_graph(char * basename,
+                         node_t **nodes,
+                         int *n);
+
 #endif // _HYPER_ANF_MPI_H_
