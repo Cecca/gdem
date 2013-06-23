@@ -17,6 +17,34 @@
 # and `i` is the ID of the processor that will load that file.
 
 import argparse
+import sys
+
+def open_files(args):
+    files = []
+    for i in range(args.num_processors):
+        filename = args.basename + '-' + str(i) + '.adj'
+        print 'Opening file', filename
+        f = open(filename, mode='w')
+        files.append(f)
+    return files
+
+def close_files(files):
+    for f in files:
+        print 'Closing file', f.name
+        f.close()
+
+def get_processor_id(node_id, num_processors):
+    return int(node_id) % num_processors
+
+def split_graph(args):
+    files = open_files(args)
+    num_processors = args.num_processors
+    for line in sys.stdin:
+        node_id = line.split('|')[0]
+        processor_id = get_processor_id(node_id, num_processors)
+        files[processor_id].write(line)
+
+    close_files(files)
 
 def main():
     argParser = argparse.ArgumentParser(description='Splits a graph file.')
@@ -27,6 +55,7 @@ def main():
                            default=1, type=int,
                            help='The number of processors, defaults to one.')
     args = argParser.parse_args()
+    split_graph(args)
 
 
 if __name__ == '__main__':
