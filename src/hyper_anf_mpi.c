@@ -174,9 +174,10 @@ void mpi_neighbourhood_init (mpi_neighbourhood_t *neigh, int n, int bits) {
 }
 
 void mpi_neighbourhood_free (mpi_neighbourhood_t *neigh) {
-  for (int i = 0; i < neigh->dimension; ++i) {
-    hll_cnt_free(&neigh->counters[i]);
-  }
+  // FIXME: it seems that this free is invalid
+//  for (int i = 0; i < neigh->dimension; ++i) {
+//    hll_cnt_free(&neigh->counters[i]);
+//  }
   free(neigh->counters);
 }
 
