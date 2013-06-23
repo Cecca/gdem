@@ -4,7 +4,11 @@
 
 int main(int argc, char **argv) {
 
-  MPI_Init(&argc, &argv);
+  int rc = MPI_Init(&argc,&argv);
+  if (rc != MPI_SUCCESS) {
+    printf ("Error starting MPI program. Terminating.\n");
+    MPI_Abort(MPI_COMM_WORLD, rc);
+  }
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
@@ -25,6 +29,8 @@ int main(int argc, char **argv) {
     free(nodes);
   }
   free_context(&context);
+
+  printf("Done!!\n");
 
   MPI_Finalize();
 
