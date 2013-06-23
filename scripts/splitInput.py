@@ -18,8 +18,11 @@
 
 import argparse
 import sys
+import os
 
 def open_files(args):
+    os.mkdir(args.directory)
+    os.chdir(args.directory)
     files = []
     for i in range(args.num_processors):
         filename = args.basename + '-' + str(i) + '.adj'
@@ -54,6 +57,10 @@ def main():
     argParser.add_argument('-n', metavar='N', dest='num_processors',
                            default=1, type=int,
                            help='The number of processors, defaults to one.')
+    argParser.add_argument('-d', '--dir', dest='directory',
+                           default='.', metavar='DIR',
+                           help=
+                           'The directory where output files will be placed in')
     args = argParser.parse_args()
     split_graph(args)
 
