@@ -45,6 +45,7 @@ struct context {
                            */
   size_t num_requests; /**< The number of requests. See requests.
                          */
+  int num_registers; /**< The number of registers used in counters */
   int iteration; /**< The current algorithm iteration */
   int num_changed; /**< The number of nodes changed since the last iteration */
   int num_processors; /**< The number of processors */

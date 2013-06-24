@@ -19,6 +19,7 @@ void init_context ( context_t *context,
   context->iteration = 0;
   context->num_changed = INT_MAX;
   context->max_iteration = max_iteration;
+  context->num_registers = 1 << bits; // 2^bits
   // get the number of processors
   MPI_Comm_size(MPI_COMM_WORLD, & context->num_processors);
   // get the rank of this processor
@@ -70,8 +71,41 @@ void free_context (context_t *context) {
   free(context->requests);
 }
 
-void receive_counters (context_t * context, int node_rank) {
+void receive_counters (context_t * context, int i, size_t * request_idx) {
+  for (int j = 0; j < context->nodes[i].num_out; ++j) {
+    node_id_t neighbour = context->nodes[i].out[j];
+    int neighbour_processor = get_processor_rank(
+          neighbour, context->num_processors);
+    // This is the counter for the neighbour
+    // `context->neighbourhoods[i].counters[j];`
+    MPI_Irecv( &context->neighbourhoods[i].counters[j].registers, // the buffer of data that receivs the result
+               context->num_registers, // the number of data items being sent
+               MPI_UNSIGNED_CHAR, // the type of data being sent
+               neighbour_processor, // the source id.
+               neighbour, // the tag of message: the neighbour's ID
+               MPI_COMM_WORLD, // the communicator
+               & context->requests[(*request_idx)++] // the requests to store
+             );
+  } // end receive from neghbours
+}
 
+void send_counters (context_t * context, int i, size_t * request_idx) {
+  hll_counter_t node_counter = context->counters[i];
+  // this ID will be the tag of the message.
+  node_id_t node_id = context->nodes[i].id;
+  for (int j = 0; j < context->nodes[i].num_in; ++j) {
+    node_id_t neighbour_id = context->nodes[i].in[j];
+    int neighbour_processor = get_processor_rank(
+          neighbour_id, context->num_processors);
+    MPI_Isend( &node_counter.registers, // the buffer being sent
+               context->num_registers, // the number of elements being sent
+               MPI_UNSIGNED_CHAR, // the type of message elements
+               neighbour_processor, // the destination of the message
+               node_id, // the tag of the message: the node's ID
+               MPI_COMM_WORLD, // the communicator
+               & context->requests[(*request_idx)++] // the request to store
+             );
+  } // end send to neighbours
 }
 
 void exchange_counters (context_t * context) {
@@ -79,40 +113,10 @@ void exchange_counters (context_t * context) {
   // - for each node in partial graph
   printf("(Process %d) Distributing counters\n", context->rank);
   for (int i = 0; i < context->num_nodes; ++i) {
-    hll_counter_t node_counter = context->counters[i];
     //   * expect to receive counters from out neighbours
-    for (int j = 0; j < context->nodes[i].num_out; ++j) {
-      node_id_t neighbour = context->nodes[i].out[j];
-      int neighbour_processor = get_processor_rank(
-            neighbour, context->num_processors);
-      // This is the counter for the neighbour
-      // `context->neighbourhoods[i].counters[j];`
-      MPI_Irecv( &context->neighbourhoods[i].counters[j].registers, // the buffer of data that receivs the result
-                 node_counter.m, // the number of data items being sent
-                 MPI_UNSIGNED_CHAR, // the type of data being sent
-                 neighbour_processor, // the source id.
-                 neighbour, // the tag of message: the neighbour's ID
-                 MPI_COMM_WORLD, // the communicator
-                 & context->requests[request_idx++] // the requests to store
-               );
-    } // end receive from neghbours
+    receive_counters(context, i, &request_idx);
     //   * send counter to in neighbours
-
-    // this ID will be the tag of the message.
-    node_id_t node_id = context->nodes[i].id;
-    for (int j = 0; j < context->nodes[i].num_in; ++j) {
-      node_id_t neighbour_id = context->nodes[i].in[j];
-      int neighbour_processor = get_processor_rank(
-            neighbour_id, context->num_processors);
-      MPI_Isend( &node_counter.registers, // the buffer being sent
-                 node_counter.m, // the number of elements being sent
-                 MPI_UNSIGNED_CHAR, // the type of message elements
-                 neighbour_processor, // the destination of the message
-                 node_id, // the tag of the message: the node's ID
-                 MPI_COMM_WORLD, // the communicator
-                 & context->requests[request_idx++] // the request to store
-               );
-    } // end send to neighbours
+    send_counters(context, i, &request_idx);
   }
   // check if we have sent all requests
   printd("Requests %d over %d\n", request_idx, context->num_requests);
