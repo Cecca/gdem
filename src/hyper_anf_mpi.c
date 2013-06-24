@@ -70,6 +70,101 @@ void free_context (context_t *context) {
   free(context->requests);
 }
 
+void receive_counters (context_t * context, int node_rank) {
+
+}
+
+void exchange_counters (context_t * context) {
+  size_t request_idx = 0;
+  // - for each node in partial graph
+  printf("(Process %d) Distributing counters\n", context->rank);
+  for (int i = 0; i < context->num_nodes; ++i) {
+    hll_counter_t node_counter = context->counters[i];
+    //   * expect to receive counters from out neighbours
+    for (int j = 0; j < context->nodes[i].num_out; ++j) {
+      node_id_t neighbour = context->nodes[i].out[j];
+      int neighbour_processor = get_processor_rank(
+            neighbour, context->num_processors);
+      // This is the counter for the neighbour
+      // `context->neighbourhoods[i].counters[j];`
+      MPI_Irecv( &context->neighbourhoods[i].counters[j].registers, // the buffer of data that receivs the result
+                 node_counter.m, // the number of data items being sent
+                 MPI_UNSIGNED_CHAR, // the type of data being sent
+                 neighbour_processor, // the source id.
+                 neighbour, // the tag of message: the neighbour's ID
+                 MPI_COMM_WORLD, // the communicator
+                 & context->requests[request_idx++] // the requests to store
+               );
+    } // end receive from neghbours
+    //   * send counter to in neighbours
+
+    // this ID will be the tag of the message.
+    node_id_t node_id = context->nodes[i].id;
+    for (int j = 0; j < context->nodes[i].num_in; ++j) {
+      node_id_t neighbour_id = context->nodes[i].in[j];
+      int neighbour_processor = get_processor_rank(
+            neighbour_id, context->num_processors);
+      MPI_Isend( &node_counter.registers, // the buffer being sent
+                 node_counter.m, // the number of elements being sent
+                 MPI_UNSIGNED_CHAR, // the type of message elements
+                 neighbour_processor, // the destination of the message
+                 node_id, // the tag of the message: the node's ID
+                 MPI_COMM_WORLD, // the communicator
+                 & context->requests[request_idx++] // the request to store
+               );
+    } // end send to neighbours
+  }
+  // check if we have sent all requests
+  printd("Requests %d over %d\n", request_idx, context->num_requests);
+  assert(request_idx == context->num_requests);
+}
+
+int update_counters (context_t *context) {
+  printf("(Process %d) Updating counters\n", context->rank);
+  // set up the counter of changed nodes
+  int changed_counters = 0;
+  // - for each node in partial graph
+  for (int i = 0; i < context->num_nodes; ++i) {
+    hll_counter_t
+        node_counter = context->counters[i],
+        node_counter_prev = context->counters_prev[i];
+    assert(hll_cnt_size(&node_counter) >= hll_cnt_size(&node_counter_prev));
+    //   * update counters
+    for (int j = 0; j < context->neighbourhoods[i].dimension; ++j) {
+      hll_cnt_union_i(
+            &node_counter, &context->neighbourhoods[i].counters[j]);
+    }
+    if(!hll_cnt_equals(&node_counter, &node_counter_prev)) {
+      ++changed_counters;
+    }
+    // update the prev counter
+    hll_cnt_copy_to(&node_counter, &node_counter_prev);
+  }
+  return changed_counters;
+}
+
+void count_changed (context_t * context, int local_changed) {
+  int changed_counters = local_changed;
+  printf("(Process %d) Computing total number of changed nodes\n", context->rank);
+  printd("(Process %d) %d counters changed\n",
+         context->rank, changed_counters);
+  // - use mpi_reduce to compute the number of changed nodes.
+  int total_changed = 0;
+  MPI_Reduce( &changed_counters,
+              &total_changed,
+              1,
+              MPI_INT,
+              MPI_SUM,
+              0, // root of the sum
+              MPI_COMM_WORLD);
+
+  printd("(Process %d) A total of %d counters changed\n",
+         context->rank, total_changed);
+  MPI_Bcast(&total_changed, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+  context->num_changed = total_changed;
+}
+
 // **Attention**: maybe it's not really important to tag messages. When we
 // perform the union of counters we don't care from where the counters arrive.
 int mpi_diameter( context_t * context )
@@ -84,95 +179,14 @@ int mpi_diameter( context_t * context )
     // compute the neighbourhood function before updating counters.
     compute_neighbourhood_function(context);
 
-    size_t request_idx = 0;
-    // - for each node in partial graph
-    printf("(Process %d) Distributing counters\n", context->rank);
-    for (int i = 0; i < context->num_nodes; ++i) {
-      printd("Node %d: %d out, %d in\n", context->nodes[i].id,
-             context->nodes[i].num_out, context->nodes[i].num_in);
-      hll_counter_t node_counter = context->counters[i];
-      //   * expect to receive counters from out neighbours
-      for (int j = 0; j < context->nodes[i].num_out; ++j) {
-        node_id_t neighbour = context->nodes[i].out[j];
-        int neighbour_processor = get_processor_rank(
-              neighbour, context->num_processors);
-        // This is the counter for the neighbour
-        // `context->neighbourhoods[i].counters[j];`
-        MPI_Irecv( &context->neighbourhoods[i].counters[j].registers, // the buffer of data that receivs the result
-                   node_counter.m, // the number of data items being sent
-                   MPI_UNSIGNED_CHAR, // the type of data being sent
-                   neighbour_processor, // the source id.
-                   neighbour, // the tag of message: the neighbour's ID
-                   MPI_COMM_WORLD, // the communicator
-                   & context->requests[request_idx++] // the requests to store
-                 );
-      } // end receive from neghbours
-      //   * send counter to in neighbours
+    exchange_counters(context);
 
-      // this ID will be the tag of the message.
-      node_id_t node_id = context->nodes[i].id;
-      for (int j = 0; j < context->nodes[i].num_in; ++j) {
-        node_id_t neighbour_id = context->nodes[i].in[j];
-        int neighbour_processor = get_processor_rank(
-              neighbour_id, context->num_processors);
-        MPI_Isend( &node_counter.registers, // the buffer being sent
-                   node_counter.m, // the number of elements being sent
-                   MPI_UNSIGNED_CHAR, // the type of message elements
-                   neighbour_processor, // the destination of the message
-                   node_id, // the tag of the message: the node's ID
-                   MPI_COMM_WORLD, // the communicator
-                   & context->requests[request_idx++] // the request to store
-                 );
-      } // end send to neighbours
-    }
-    // check if we have sent all requests
-    printd("Requests %d over %d\n", request_idx, context->num_requests);
-    assert(request_idx == context->num_requests);
+    int changed_counters = update_counters(context);
 
-    printf("(Process %d) Updating counters\n", context->rank);
-    // set up the counter of changed nodes
-    int changed_counters = 0;
-    // - for each node in partial graph
-    for (int i = 0; i < context->num_nodes; ++i) {
-      hll_counter_t
-          node_counter = context->counters[i],
-          node_counter_prev = context->counters_prev[i];
-      assert(hll_cnt_size(&node_counter) >= hll_cnt_size(&node_counter_prev));
-      //   * update counters
-      for (int j = 0; j < context->neighbourhoods[i].dimension; ++j) {
-        printd("Performing union of counters for %d: counter %d\n",
-               context->nodes[i].id, j);
-        hll_cnt_union_i(
-              &node_counter, &context->neighbourhoods[i].counters[j]);
-      }
-      if(!hll_cnt_equals(&node_counter, &node_counter_prev)) {
-        ++changed_counters;
-      }
-      // update the prev counter
-      hll_cnt_copy_to(&node_counter, &node_counter_prev);
-    }
-    printf("(Process %d) Computing total number of changed nodes\n", context->rank);
-    printd("(Process %d) %d counters changed\n",
-           context->rank, changed_counters);
-    // - use mpi_reduce to compute the number of changed nodes.
-    int total_changed = 0;
-    MPI_Reduce( &changed_counters,
-                &total_changed,
-                1,
-                MPI_INT,
-                MPI_SUM,
-                0, // root of the sum
-                MPI_COMM_WORLD);
-
-    printd("(Process %d) A total of %d counters changed\n",
-           context->rank, total_changed);
-    MPI_Bcast(&total_changed, 1, MPI_INT, 0, MPI_COMM_WORLD);
-
-    context->num_changed = total_changed;
+    count_changed(context, changed_counters);
 
     printf("(Process %d) finish iteration %d\n",
            context->rank, context->iteration);
-    MPI_Barrier(MPI_COMM_WORLD);
 
     ++context->iteration;
   }
