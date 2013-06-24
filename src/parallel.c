@@ -12,7 +12,6 @@ int main(int argc, char **argv) {
 
   int rank;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-  printf("Rank %d\n", rank);
   char filename[] = "graph/graph";
   node_t * nodes = 0;
   int n;
@@ -21,7 +20,7 @@ int main(int argc, char **argv) {
 
 
   context_t context;
-  init_context(&context, nodes, n, 2, 100);
+  init_context(&context, nodes, n, 1, 100);
 
   mpi_diameter(&context);
 

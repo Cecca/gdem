@@ -77,6 +77,8 @@ int mpi_diameter( context_t * context )
   while ( context->num_changed != 0 &&
           context->iteration < context->max_iteration)
   {
+    printf("(Process %d) Start iteration %d",
+           context->rank, context->iteration);
     // reset the number of changed nodes
     context->num_changed = 0;
     // compute the neighbourhood function before updating counters.
@@ -84,6 +86,7 @@ int mpi_diameter( context_t * context )
 
     size_t request_idx = 0;
     // - for each node in partial graph
+    printf("(Process %d) Distributing counters\n", context->rank);
     for (int i = 0; i < context->num_nodes; ++i) {
       printd("Node %d: %d out, %d in\n", context->nodes[i].id,
              context->nodes[i].num_out, context->nodes[i].num_in);
@@ -126,9 +129,15 @@ int mpi_diameter( context_t * context )
     printd("Requests %d over %d\n", request_idx, context->num_requests);
     assert(request_idx == context->num_requests);
 
+    printf("(Process %d) Updating counters\n", context->rank);
+    // set up the counter of changed nodes
+    int changed_counters = 0;
     // - for each node in partial graph
     for (int i = 0; i < context->num_nodes; ++i) {
-      hll_counter_t node_counter = context->counters[i];
+      hll_counter_t
+          node_counter = context->counters[i],
+          node_counter_prev = context->counters_prev[i];
+      assert(hll_cnt_size(&node_counter) >= hll_cnt_size(&node_counter_prev));
       //   * update counters
       for (int j = 0; j < context->neighbourhoods[i].dimension; ++j) {
         printd("Performing union of counters for %d: counter %d\n",
@@ -136,9 +145,34 @@ int mpi_diameter( context_t * context )
         hll_cnt_union_i(
               &node_counter, &context->neighbourhoods[i].counters[j]);
       }
+      if(!hll_cnt_equals(&node_counter, &node_counter_prev)) {
+        ++changed_counters;
+      }
+      // update the prev counter
+      hll_cnt_copy_to(&node_counter, &node_counter_prev);
     }
+    printf("(Process %d) Computing total number of changed nodes\n", context->rank);
+    printd("(Process %d) %d counters changed\n",
+           context->rank, changed_counters);
     // - use mpi_reduce to compute the number of changed nodes.
-    // - if no nodes changed or we are at max_iteration, stop.
+    int total_changed = 0;
+    MPI_Reduce( &changed_counters,
+                &total_changed,
+                1,
+                MPI_INT,
+                MPI_SUM,
+                0, // root of the sum
+                MPI_COMM_WORLD);
+
+    printd("(Process %d) A total of %d counters changed\n",
+           context->rank, total_changed);
+    MPI_Bcast(&total_changed, 1, MPI_INT, 0, MPI_COMM_WORLD);
+
+    context->num_changed = total_changed;
+
+    printf("(Process %d) finish iteration %d\n",
+           context->rank, context->iteration);
+    MPI_Barrier(MPI_COMM_WORLD);
 
     ++context->iteration;
   }
@@ -189,6 +223,6 @@ void load_partial_graph ( int rank,
                           int *n) {
   char filename[MAX_FILENAME_LENGTH];
   sprintf(filename, "%s-%d.adj", basename, rank);
-  printf("Loading file %s\n", filename);
+  printf("(Process %d) Loading file %s\n", rank, filename);
   parse_graph_file(filename, nodes, n);
 }
