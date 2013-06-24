@@ -91,7 +91,11 @@ int main(int argc, char **argv) {
   context_t context;
   init_context(&context, nodes, n, opts.bits, opts.max_iter);
 
-  mpi_diameter(&context);
+  int diameter = mpi_diameter(&context);
+
+  if(rank == 0) {
+    printf("Diameter = %d\n", diameter);
+  }
 
   if(nodes != 0) {
     free(nodes);
