@@ -77,7 +77,7 @@ int mpi_diameter( context_t * context )
   while ( context->num_changed != 0 &&
           context->iteration < context->max_iteration)
   {
-    printf("(Process %d) Start iteration %d",
+    printf("(Process %d) Start iteration %d\n",
            context->rank, context->iteration);
     // reset the number of changed nodes
     context->num_changed = 0;
