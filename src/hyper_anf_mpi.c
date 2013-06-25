@@ -113,7 +113,7 @@ void send_counters (context_t * context, int i, size_t * request_idx) {
                neighbour_processor, // the destination of the message
                node_id, // the tag of the message: the node's ID
                MPI_COMM_WORLD, // the communicator
-               & context->requests[snd_req_idx++] // the request to store
+               & ctx.requests[snd_req_idx++] // the request to store
              );
   } // end send to neighbours
   *request_idx += snd_req_idx;
