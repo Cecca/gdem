@@ -162,8 +162,7 @@ int update_counters (context_t *context) {
 
 void count_changed (context_t * context, int local_changed) {
   int changed_counters = local_changed;
-  printf("(Process %d) Computing total number of changed nodes\n", context->rank);
-  printd("(Process %d) %d counters changed\n",
+  printf("(Process %d) %d counters changed\n",
          context->rank, changed_counters);
   // - use mpi_reduce to compute the number of changed nodes.
   int total_changed = 0;
@@ -175,8 +174,10 @@ void count_changed (context_t * context, int local_changed) {
               0, // root of the sum
               MPI_COMM_WORLD);
 
-  printd("(Process %d) A total of %d counters changed\n",
-         context->rank, total_changed);
+  if(context->rank == 0) {
+    printf("(Process %d) A total of %d counters changed\n",
+           context->rank, total_changed);
+  }
   MPI_Bcast(&total_changed, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   context->num_changed = total_changed;
@@ -189,7 +190,7 @@ int mpi_diameter( context_t * context )
   while ( context->num_changed != 0 &&
           context->iteration < context->max_iteration)
   {
-    printf("(Process %d) Start iteration %d\n",
+    printd("(Process %d) Start iteration %d\n",
            context->rank, context->iteration);
     // reset the number of changed nodes
     context->num_changed = 0;
@@ -202,7 +203,7 @@ int mpi_diameter( context_t * context )
 
     count_changed(context, changed_counters);
 
-    printf("(Process %d) finish iteration %d\n",
+    printd("(Process %d) finish iteration %d\n",
            context->rank, context->iteration);
 
     ++context->iteration;
