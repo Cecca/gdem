@@ -72,21 +72,26 @@ void free_context (context_t *context) {
 }
 
 void receive_counters (context_t * context, int i, size_t * request_idx) {
-  for (int j = 0; j < context->nodes[i].num_out; ++j) {
-    node_id_t neighbour = context->nodes[i].out[j];
+  size_t recv_req_idx = 0;
+  context_t ctx = *context;
+  mpi_neighbourhood_t neighbourhood = ctx.neighbourhoods[i];
+
+  for (int j = 0; j < ctx.nodes[i].num_out; ++j) {
+    node_id_t neighbour = ctx.nodes[i].out[j];
     int neighbour_processor = get_processor_rank(
-          neighbour, context->num_processors);
+          neighbour, ctx.num_processors);
     // This is the counter for the neighbour
     // `context->neighbourhoods[i].counters[j];`
-    MPI_Irecv( &context->neighbourhoods[i].counters[j].registers, // the buffer of data that receivs the result
-               context->num_registers, // the number of data items being sent
+    MPI_Irecv( &neighbourhood.counters[j].registers, // the buffer of data that receivs the result
+               ctx.num_registers, // the number of data items being sent
                MPI_UNSIGNED_CHAR, // the type of data being sent
                neighbour_processor, // the source id.
                neighbour, // the tag of message: the neighbour's ID
                MPI_COMM_WORLD, // the communicator
-               & context->requests[(*request_idx)++] // the requests to store
+               & ctx.requests[recv_req_idx++] // the requests to store
              );
   } // end receive from neghbours
+  *request_idx += recv_req_idx;
 }
 
 void send_counters (context_t * context, int i, size_t * request_idx) {
