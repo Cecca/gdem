@@ -135,19 +135,21 @@ void exchange_counters (context_t * context) {
 }
 
 int update_counters (context_t *context) {
-  printf("(Process %d) Updating counters\n", context->rank);
+  context_t ctx = *context;
+
+  printf("(Process %d) Updating counters\n", ctx.rank);
   // set up the counter of changed nodes
   int changed_counters = 0;
   // - for each node in partial graph
-  for (int i = 0; i < context->num_nodes; ++i) {
+  for (int i = 0; i < ctx.num_nodes; ++i) {
     hll_counter_t
-        node_counter = context->counters[i],
-        node_counter_prev = context->counters_prev[i];
+        node_counter = ctx.counters[i],
+        node_counter_prev = ctx.counters_prev[i];
     assert(hll_cnt_size(&node_counter) >= hll_cnt_size(&node_counter_prev));
     //   * update counters
-    for (int j = 0; j < context->neighbourhoods[i].dimension; ++j) {
+    for (int j = 0; j < ctx.neighbourhoods[i].dimension; ++j) {
       hll_cnt_union_i(
-            &node_counter, &context->neighbourhoods[i].counters[j]);
+            &node_counter, &ctx.neighbourhoods[i].counters[j]);
     }
     if(!hll_cnt_equals(&node_counter, &node_counter_prev)) {
       ++changed_counters;
