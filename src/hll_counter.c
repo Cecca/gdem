@@ -3,6 +3,44 @@
 #include "check_ptr.h"
 #include "debug.h"
 
+unsigned long long int HLL_SEED = 0x9fba92b0fa0ce343L;
+
+/**
+ * Function to compute the hash function from node IDs.
+ *
+ * Taken from the WebGraph framework, specifically the class
+ * IntHyperLogLogCounterArray.
+ *
+ * Note that the `x` parameter is a `Long`, but the function will also work
+ * with `Int` values.
+ *
+ * @param x the element to hash, i.e. the node ID
+ * @param seed the seed to set up internal state.
+ * @return the hashed value of `x`
+ */
+unsigned long long int jenkins(unsigned long long int x, unsigned long long int seed ) {
+  /* Set up the internal state */
+  unsigned long long int a = seed + x;
+  unsigned long long int b = seed;
+  unsigned long long int c = 0x9e3779b97f4a7c13L; /* the golden ratio; an arbitrary value */
+
+  // on unsigned values, the right shift is the logical shift
+  a -= b; a -= c; a ^= c >> 43;
+  b -= c; b -= a; b ^= a << 9;
+  c -= a; c -= b; c ^= b >> 8;
+  a -= b; a -= c; a ^= c >> 38;
+  b -= c; b -= a; b ^= a << 23;
+  c -= a; c -= b; c ^= b >> 5;
+  a -= b; a -= c; a ^= c >> 35;
+  b -= c; b -= a; b ^= a << 49;
+  c -= a; c -= b; c ^= b >> 11;
+  a -= b; a -= c; a ^= c >> 12;
+  b -= c; b -= a; b ^= a << 18;
+  c -= a; c -= b; c ^= b >> 22;
+
+  return c;
+}
+
 inline void hll_cnt_init (hll_counter_t *counter, size_t bits) {
   assert( bits < sizeof(hll_hash_t)*8
          && "You cannot use more bits than there are in the hash value");
