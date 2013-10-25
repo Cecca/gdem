@@ -263,12 +263,31 @@ double mpi_diameter( context_t * context )
   printf("(Process %d) Elapsed time: %ld.%06ld\n",
          context->rank, tvDiff.tv_sec, tvDiff.tv_usec);
 
-  return context->iteration - 1;
+  return effective_diameter(context);
 }
 
 double effective_diameter(context_t *context) {
+  int last_idx = context->iteration - 1;
+  // broadcast neighbourhood function
+  MPI_Bcast(context->neighbourhood_function, last_idx+1, MPI_DOUBLE, 0, MPI_COMM_WORLD);
 
-  return 0;
+  double nf_max = context->neighbourhood_function[last_idx];
+  printf("(Process %d) max value = %f\n", context->rank, nf_max);
+  double nf_elem = 0;
+  int i = 0;
+  for(; i<=last_idx; ++i) {
+    nf_elem = context->neighbourhood_function[i];
+    printf("(Process %d) N(%d) = %f\n", context->rank, i, nf_elem);
+    if(nf_elem/nf_max >= context->alpha) {
+      break;
+    }
+  }
+
+  if (i == 0) {
+    return i + (context->alpha * nf_max - nf_elem) / nf_elem;
+  } else {
+    return i + (context->alpha * nf_max - nf_elem) / (nf_elem - context->neighbourhood_function[i-1]);
+  }
 }
 
 void compute_neighbourhood_function (context_t * context) {

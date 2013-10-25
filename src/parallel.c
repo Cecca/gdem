@@ -49,6 +49,9 @@ options_t parse_options(int argc, char **argv) {
         opts.bits = atol(argv[++idx]);
         bits_set = TRUE;
         break;
+      case 'a': // alpha
+        opts.alpha = atol(argv[++idx]);
+        alpha_set = TRUE;
 
       default:
         printf("Wrong Argument: %s\n", argv[idx]);
