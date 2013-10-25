@@ -228,7 +228,7 @@ void count_changed (context_t * context, int local_changed) {
 
 // **Attention**: maybe it's not really important to tag messages. When we
 // perform the union of counters we don't care from where the counters arrive.
-int mpi_diameter( context_t * context )
+double mpi_diameter( context_t * context )
 {
   struct timeval tvBegin, tvEnd, tvDiff;
 
@@ -262,6 +262,11 @@ int mpi_diameter( context_t * context )
          context->rank, tvDiff.tv_sec, tvDiff.tv_usec);
 
   return context->iteration - 1;
+}
+
+double effective_diameter(context_t *context) {
+
+  return 0;
 }
 
 void compute_neighbourhood_function (context_t * context) {

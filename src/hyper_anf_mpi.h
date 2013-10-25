@@ -98,9 +98,9 @@ void free_context(context_t * context);
  * @param max_iteration
  * @return
  */
-int mpi_diameter(context_t *context);
+double mpi_diameter(context_t *context);
 
-
+double effective_diameter(context_t *context);
 
 void compute_neighbourhood_function(context_t * context);
 
