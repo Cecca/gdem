@@ -274,6 +274,7 @@ void compute_neighbourhood_function (context_t * context) {
   if ( context->rank == 0 ) {
     printf("N(%d) = %d\n", context->iteration, sum);
   }
+  context->neighbourhood_function[context->iteration] = sum;
 }
 
 
