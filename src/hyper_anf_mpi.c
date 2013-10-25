@@ -141,18 +141,33 @@ void send_counters (context_t * context, int i, size_t * request_idx) {
 }
 
 void exchange_counters (context_t * context) {
+
+  struct timeval tvBegin, tvEnd, tvDiff;
+
   size_t request_idx = 0;
   // - for each node in partial graph
   printf("(Process %d) Distributing counters\n", context->rank);
+
+  gettimeofday(&tvBegin, NULL);
+
   for (int i = 0; i < context->num_nodes; ++i) {
     //   * expect to receive counters from out neighbours
     receive_counters(context, i, &request_idx);
     //   * send counter to in neighbours
     send_counters(context, i, &request_idx);
   }
+
+  gettimeofday(&tvEnd, NULL);
+  timeval_subtract(&tvDiff, &tvEnd, &tvBegin);
+
   // check if we have sent all requests
   printd("Requests %d over %d\n", request_idx, context->num_requests);
+
   assert(request_idx == context->num_requests);
+
+  printf("(Process %d) Time for the counters exchange: %ld.%06ld\n",
+         context->rank, tvDiff.tv_sec, tvDiff.tv_usec);
+
 }
 
 int update_counters (context_t *context) {
