@@ -277,18 +277,19 @@ double effective_diameter(context_t *context) {
   int i = 0;
   for(; i<=last_idx; ++i) {
     nf_elem = context->neighbourhood_function[i];
-    printf("(Process %d) N(%d) = %f\n", context->rank, i, nf_elem);
+//    printf("(Process %d) N(%d) = %f\n", context->rank, i, nf_elem);
     if(nf_elem/nf_max >= context->alpha) {
       break;
     }
   }
 
-  double eff_diam = 0;
-
   if (i == 0) {
     return i + (context->alpha * nf_max - nf_elem) / nf_elem;
   } else {
-    return i + (context->alpha * nf_max - nf_elem) / (nf_elem - context->neighbourhood_function[i-1]);
+    double num = (context->alpha * nf_max - nf_elem);
+    double den = (nf_elem - context->neighbourhood_function[i-1]);
+    printf("(Process %d) num = %f, den = %f\n", num, den);
+    return i + num / den;
   }
 }
 

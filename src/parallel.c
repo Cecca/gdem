@@ -17,8 +17,9 @@ void print_options(options_t opts) {
         "Options:\n"
         "  bits: %d\n"
         "  max_iter: %d\n"
+        "  alpha: %f\n"
         "  basename: %s\n",
-        opts.bits, opts.max_iter, opts.basename);
+        opts.bits, opts.max_iter, opts.alpha, opts.basename);
 }
 
 void print_usage() {
@@ -50,8 +51,9 @@ options_t parse_options(int argc, char **argv) {
         bits_set = TRUE;
         break;
       case 'a': // alpha
-        opts.alpha = atol(argv[++idx]);
+        opts.alpha = strtod(argv[++idx], NULL);
         alpha_set = TRUE;
+        break;
 
       default:
         printf("Wrong Argument: %s\n", argv[idx]);
