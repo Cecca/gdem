@@ -106,8 +106,9 @@ inline hll_reg_t hll_cnt_rho(hll_hash_t x, hll_hash_t mask) {
   return i;
 }
 
-inline void hll_cnt_add(hll_hash_t x, hll_counter_t * cnt) {
+inline void hll_cnt_add(hll_hash_t elem, hll_counter_t * cnt) {
   assert(cnt->registers != NULL);
+  hll_hash_t x = jenkins(elem, HLL_SEED);
   // Computes the register index
   size_t j = (cnt->b == 0)? 0 : x >> (sizeof(hll_hash_t)*8 - cnt->b);
   hll_reg_t r = hll_cnt_rho(x, cnt->mask);
