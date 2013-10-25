@@ -51,6 +51,8 @@ struct context {
   int num_processors; /**< The number of processors */
   int max_iteration; /**< The maximum iteration number we are allowed to do */
   int rank; /**< The rank of the processor */
+  double *neighbourhood_function; /**< The neighbourhood function as an
+                                       array of length max_iteration */
 };
 typedef struct context context_t;
 
@@ -97,6 +99,8 @@ void free_context(context_t * context);
  * @return
  */
 int mpi_diameter(context_t *context);
+
+
 
 void compute_neighbourhood_function(context_t * context);
 

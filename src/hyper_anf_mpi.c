@@ -57,6 +57,12 @@ void init_context ( context_t *context,
           &context->neighbourhoods[i], partial_graph[i].num_out, bits);
   }
 
+  // init neighbourhood function
+  context->neighbourhood_function =
+      malloc(context->max_iteration * sizeof(double));
+  check_ptr(context->neighbourhood_function);
+  memset(context->neighbourhood_function, 0, context->max_iteration * sizeof(double));
+
   // init counters
   context->counters = malloc(context->num_nodes * sizeof(hll_counter_t));
   check_ptr(context->counters);
@@ -90,6 +96,7 @@ void free_context (context_t *context) {
   free(context->counters_prev);
   free(context->neighbourhoods);
   free(context->requests);
+  free(context->neighbourhood_function);
 }
 
 void receive_counters (context_t * context, int i, size_t * request_idx) {
