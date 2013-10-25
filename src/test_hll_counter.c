@@ -18,52 +18,6 @@ START_TEST (hll_counter_rho_test) {
 }
 END_TEST
 
-START_TEST (hll_insertion) {
-  hll_counter_t *c = hll_cnt_new(0);
-
-  hll_cnt_add(0b0010000, c);
-  ck_assert_int_eq(5, c->registers[0]);
-
-  hll_cnt_add(0b1000000, c);
-  ck_assert_int_eq(7, c->registers[0]);
-
-  hll_cnt_add(0b10000010, c);
-  ck_assert_int_eq(7, c->registers[0]);
-
-  hll_cnt_delete(c);
-}
-END_TEST
-
-START_TEST (hll_insertion_2) {
-  hll_counter_t *c = hll_cnt_new(1);
-
-  hll_cnt_add(0b0010000, c);
-  hll_cnt_add(~0, c);
-  ck_assert_int_eq(5, c->registers[0]);
-  ck_assert_int_eq(1, c->registers[1]);
-
-  hll_cnt_delete(c);
-}
-END_TEST
-
-START_TEST (hll_insertion_3) {
-  hll_counter_t *c = hll_cnt_new(2);
-
-  int shift = sizeof(hll_hash_t)*8 -2;
-
-  hll_cnt_add(4, c);
-  hll_cnt_add(1<<shift | 4, c);
-  hll_cnt_add(2<<shift | 4, c);
-  hll_cnt_add(3<<shift | 4, c);
-  ck_assert_int_ne(0, c->registers[0]);
-  ck_assert_int_ne(0, c->registers[1]);
-  ck_assert_int_ne(0, c->registers[2]);
-  ck_assert_int_ne(0, c->registers[3]);
-
-  hll_cnt_delete(c);
-}
-END_TEST
-
 START_TEST (hll_test_size) {
   /*
    * We will set the register value at 5.
@@ -443,9 +397,6 @@ Suite * hll_counter_suite () {
   tcase_add_test(tc_core, hll_copy_2);
   tcase_add_test(tc_core, hll_copy_to_1);
   tcase_add_test(tc_core, hll_counter_rho_test);
-  tcase_add_test(tc_core, hll_insertion);
-  tcase_add_test(tc_core, hll_insertion_2);
-  tcase_add_test(tc_core, hll_insertion_3);
   tcase_add_test(tc_core, hll_test_size);
   tcase_add_test(tc_core, hll_test_size_2);
   tcase_add_test(tc_core, hll_size_precision);
@@ -478,12 +429,4 @@ int main() {
   number_failed = srunner_ntests_failed(sr);
   srunner_free(sr);
   return (number_failed == 0) ? EXIT_SUCCESS : EXIT_FAILURE;
-
-//  hll_counter_t c1 = new_hll_counter(2);
-//  hll_counter_t c2 = hll_counter_copy(c1);
-
-//  printf("%d\n", hll_counter_equals(c1,c2));
-
-//    delete_hll_counter(c1);
-//    delete_hll_counter(c2);
 }
