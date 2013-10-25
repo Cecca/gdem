@@ -33,8 +33,10 @@ void init_context ( context_t *context,
                     node_t *partial_graph,
                     size_t partial_graph_cardinality,
                     int bits,
-                    int max_iteration)
+                    int max_iteration,
+                    double alpha)
 {
+  context->alpha = alpha;
   context->num_nodes = partial_graph_cardinality;
   assert(context->num_nodes > 0);
   context->iteration = 0;

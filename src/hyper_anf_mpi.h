@@ -51,6 +51,7 @@ struct context {
   int num_processors; /**< The number of processors */
   int max_iteration; /**< The maximum iteration number we are allowed to do */
   int rank; /**< The rank of the processor */
+  double alpha; /**< We compute the effective diameter at `alpha` */
   double *neighbourhood_function; /**< The neighbourhood function as an
                                        array of length max_iteration */
 };
@@ -60,7 +61,8 @@ void init_context(context_t * context,
                   node_t *partial_graph,
                   size_t partial_graph_cardinality,
                   int bits,
-                  int max_iteration);
+                  int max_iteration,
+                  double alpha);
 
 /**
  * @brief free_context
