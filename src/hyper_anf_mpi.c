@@ -288,7 +288,7 @@ double effective_diameter(context_t *context) {
   } else {
     double num = (context->alpha * nf_max - nf_elem);
     double den = (nf_elem - context->neighbourhood_function[i-1]);
-    printf("(Process %d) num = %f, den = %f\n", num, den);
+//    printf("(Process %d) num = %f, den = %f\n", num, den);
     return i + num / den;
   }
 }
