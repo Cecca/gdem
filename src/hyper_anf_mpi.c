@@ -265,16 +265,16 @@ int mpi_diameter( context_t * context )
 }
 
 void compute_neighbourhood_function (context_t * context) {
-  int local_sum = 0;
+  hll_cardinality_t local_sum = 0;
   for (int i = 0; i < context->num_nodes; ++i) {
     local_sum += hll_cnt_size(&context->counters[i]);
   }
-  int sum;
-  MPI_Reduce(&local_sum, &sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+  hll_cardinality_t sum;
+  MPI_Reduce(&local_sum, &sum, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
   if ( context->rank == 0 ) {
-    printf("N(%d) = %d\n", context->iteration, sum);
+    printf("N(%d) = %f\n", context->iteration, sum);
+    context->neighbourhood_function[context->iteration] = sum;
   }
-  context->neighbourhood_function[context->iteration] = sum;
 }
 
 

@@ -103,7 +103,7 @@
  * This typedef is used to hide the actual numeric type used to represent
  * multiset cardinalities.
  */
-typedef uint32_t hll_cardinality_t;
+typedef double hll_cardinality_t;
 
 // ----------------------------------------------------------------------------
 //   Counter Definitions
