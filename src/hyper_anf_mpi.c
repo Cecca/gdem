@@ -283,6 +283,8 @@ double effective_diameter(context_t *context) {
     }
   }
 
+  double eff_diam = 0;
+
   if (i == 0) {
     return i + (context->alpha * nf_max - nf_elem) / nf_elem;
   } else {
