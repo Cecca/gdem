@@ -7,6 +7,27 @@
 #include <limits.h>
 #include <assert.h>
 #include <string.h>
+#include <sys/time.h>
+
+void timeval_print(struct timeval *tv)
+{
+    char buffer[30];
+    time_t curtime;
+
+    printf("%ld.%06ld", tv->tv_sec, tv->tv_usec);
+    curtime = tv->tv_sec;
+    strftime(buffer, 30, "%m-%d-%Y  %T", localtime(&curtime));
+    printf(" = %s.%06ld\n", buffer, tv->tv_usec);
+}
+
+int timeval_subtract(struct timeval *result, struct timeval *t2, struct timeval *t1)
+{
+    long int diff = (t2->tv_usec + 1000000 * t2->tv_sec) - (t1->tv_usec + 1000000 * t1->tv_sec);
+    result->tv_sec = diff / 1000000;
+    result->tv_usec = diff % 1000000;
+
+    return (diff<0);
+}
 
 void init_context ( context_t *context,
                     node_t *partial_graph,
@@ -187,6 +208,10 @@ void count_changed (context_t * context, int local_changed) {
 // perform the union of counters we don't care from where the counters arrive.
 int mpi_diameter( context_t * context )
 {
+  struct timeval tvBegin, tvEnd, tvDiff;
+
+  gettimeofday(&tvBegin, NULL);
+
   while ( context->num_changed != 0 &&
           context->iteration < context->max_iteration)
   {
@@ -209,6 +234,10 @@ int mpi_diameter( context_t * context )
     ++context->iteration;
   }
 
+  gettimeofday(&tvEnd, NULL);
+  timeval_subtract(&tvDiff, &tvEnd, &tvBegin);
+  printf("(Process %d) Elapsed time: %ld.%06ld\n",
+         context->rank, tvDiff.tv_sec, tvDiff.tv_usec);
 
   return context->iteration - 1;
 }
