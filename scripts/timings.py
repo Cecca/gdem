@@ -8,6 +8,7 @@ comm_times = dict()
 
 total_time_re = re.compile("\\(Process (\d)\\) Elapsed time: (\d+\\.\d+)")
 comm_time_re = re.compile("\\(Process (\d)\\) .* exchange: (\d+\\.\d+)")
+diam_re = re.compile("Effective diameter .*")
 
 def process_line(line):
     m = total_time_re.match(line)
@@ -25,6 +26,8 @@ def process_line(line):
 
 if __name__ == "__main__":
     for line in sys.stdin:
+        if diam_re.match(line):
+            print line
         process_line(line)
 
     elapsed = max(total_times.values())
