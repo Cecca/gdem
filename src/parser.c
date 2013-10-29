@@ -34,17 +34,17 @@ int parse_node_descr_to (char *descr, node_t *node) {
         sscanf(descr, "%d |%[0123456789 ]|%[0123456789 ]", &id, out_s, in_s);
   }
 
-  if (read != 3) {
-    error_message(descr);
-    return 1;
-  }
+//  if (read != 3) {
+//    error_message(descr);
+//    return 5;
+//  }
 
   int n_out = count_numbers(out_s);
   int n_in = count_numbers(in_s);
 
   if (n_in < 0 || n_out < 0) {
     error_message(descr);
-    return 1;
+    return 2;
   }
 
   node_init(node, id, n_out, n_in);
@@ -55,14 +55,14 @@ int parse_node_descr_to (char *descr, node_t *node) {
   if (inserted != n_out) {
     error_message(descr);
     node_free(node);
-    return 1;
+    return 3;
   }
 
   inserted = populate_adjacency(in_s, node->in, n_in);
   if (inserted != n_in) {
     error_message(descr);
     node_free(node);
-    return 1;
+    return 4;
   }
 
   return 0;
