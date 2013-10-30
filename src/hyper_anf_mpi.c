@@ -206,6 +206,9 @@ int update_counters (context_t *context) {
 }
 
 void count_changed (context_t * context, int local_changed) {
+  struct timeval tvBegin, tvEnd, tvDiff;
+  gettimeofday(&tvBegin, NULL);
+
   int changed_counters = local_changed;
   printf("(Process %d) %d counters changed\n",
          context->rank, changed_counters);
@@ -226,6 +229,13 @@ void count_changed (context_t * context, int local_changed) {
   MPI_Bcast(&total_changed, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
   context->num_changed = total_changed;
+
+  gettimeofday(&tvEnd, NULL);
+  timeval_subtract(&tvDiff, &tvEnd, &tvBegin);
+
+  printf("(Process %d) Time for the counters counting: %ld.%06ld\n",
+         context->rank, tvDiff.tv_sec, tvDiff.tv_usec);
+
 }
 
 // **Attention**: maybe it's not really important to tag messages. When we

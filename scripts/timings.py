@@ -7,7 +7,7 @@ total_times = dict()
 comm_times = dict()
 
 total_time_re = re.compile("\\(Process (\d)\\) Elapsed time: (\d+\\.\d+)")
-comm_time_re = re.compile("\\(Process (\d)\\) .* exchange: (\d+\\.\d+)")
+comm_time_re = re.compile("\\(Process (\d)\\) Time .*: (\d+\\.\d+)")
 diam_re = re.compile("Effective diameter .*")
 
 def process_line(line):
